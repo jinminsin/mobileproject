@@ -13,7 +13,7 @@ public class Character {
     public static int getHours(int time) { return time / 60; }
     public static int getMinutes(int time) { return time % 60; }
 
-    public Character(String name, float height, float weight,int character,int level,int experience)
+    public Character(String name, float height, float weight,int character,int level,int experience,int calories)
     {
         this.name=name;
         this.height=height;
@@ -22,57 +22,14 @@ public class Character {
         sleep_time=-1;//default
         wake_time=-1;//default
         this.level = new Level(level,experience);
+        this.calories=calories;
     }
 
-    public int getCharacter()
+    public void CalorieAcquisition(int minute, float Mets)
     {
-        return character;
-    }
-
-    public class Level {
-        private int level;
-        private int maxExperience;//필요경험치
-        private int currentExperience;//현재경험치
-        private int negativeExperience;//감소 경험치, 일정기간 이동하지 않다가 다시 이동하게 되면 증가됨.
-        private long last_exercised; // 오랫동안 이동하지 않을 시 기록
-        private int decrement_count; // 경고 알림, 일정 속도 이상의 이동 시에 초기화, 오랫동안 이동하지 않을 시 증가
-
-        public Level(int level, int experience) {
-            this.level=level;
-            maxExperience=getMaxExperience();
-            this.currentExperience=experience;
-            negativeExperience=0;
-            last_exercised=0;
-            decrement_count=0;
-        }
-
-        public void levelUp()
-        {
-            currentExperience-=maxExperience;
-            level++;
-            maxExperience=getMaxExperience();
-        }
-
-        public void dropExp()
-        {
-            negativeExperience += (int)(((System.currentTimeMillis() - last_exercised) / 3110400)/1000);
-        }
-
-        public void countDecrement()
-        {
-            decrement_count++;
-        }
-
-        public int getMaxExperience()
-        {
-            return (int)(Math.sqrt(level)*100);
-        }
-
-        public void expAcquisition(int minute, float Mets)
-        {
-            //칼로리 계산
-            calories+=minute*0.0175*Mets*weight;
-            // duration * 0.0175 * Mets * weight(kg)
+        //칼로리 계산
+        calories+=minute*0.0175*Mets*weight;
+        // duration * 0.0175 * Mets * weight(kg)
             /*
                걷기 (느리게) - 3km/h 147 2.0
                걷기 (중간) - 5km/h 243 3.3
@@ -90,6 +47,104 @@ public class Character {
                달리기 - 14.5km/h 1102 15.0
                달리기 - 16km/h 1176 16.0
             */
+    }//계산
+
+    public int getCharacter()
+    {
+        return character;
+    }
+    public void setCharacter(int character)
+    {
+        this.character=character;
+    }
+
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
+    public float getWeight() {
+        return weight;
+    }
+    public void setWeight(float weight) {
+        this.weight = weight;
+    }
+
+    public int getCalories() {
+        return calories;
+    }
+
+    public void setCalories(int calories) {
+        this.calories = calories;
+    }
+
+    public class Level {
+        private int level;
+        private int currentExperience;//현재경험치
+        private int negativeExperience;//감소 경험치, 일정기간 이동하지 않다가 다시 이동하게 되면 증가됨.
+        private long last_exercised; // 오랫동안 이동하지 않을 시 기록
+        private int decrement_count; // 경고 알림, 일정 속도 이상의 이동 시에 초기화, 오랫동안 이동하지 않을 시 증가
+
+        public Level(int level, int experience) {
+            this.level=level;
+            this.currentExperience=experience;
+            negativeExperience=0;
+            last_exercised=0;
+            decrement_count=0;
+        }
+
+        public int getLevel(){
+            return level;
+        }
+
+        public int getCurrentExperience() {
+            return currentExperience;
+        }
+
+        public void levelUp()
+        {
+            currentExperience-=getMaxExperience();
+            level++;
+        }
+
+        public void dropExp()
+        {
+            negativeExperience += (int)(((System.currentTimeMillis() - last_exercised) / 3110400)/1000);
+        }
+
+        public void countDecrement()
+        {
+            decrement_count++;
+        }
+
+        public int getMaxExperience()
+        {
+            return (int)(Math.sqrt(level)*100);
+        }
+
+        public void ExpAcquisition(int exp)
+        {
+            //경험치 계산
+            currentExperience += exp;
+            // 성장도 =  칼로리 / 10 ( 성장 )
+            // 비만도 =  negativeExperience ( 감소 )
+            if(currentExperience < 0) currentExperience = 0;
         }//계산
     }
 }

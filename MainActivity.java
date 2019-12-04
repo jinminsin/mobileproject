@@ -9,11 +9,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
-    private DBHelper helper=new DBHelper(this);
-    private SQLiteDatabase db = helper.getWritableDatabase();
+    private DBHelper helper;
+    private SQLiteDatabase db;
     private Character character;
     private Cursor cursor;
 
@@ -22,7 +23,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        helper = new DBHelper(this);
+        db = helper.getWritableDatabase();
+
         cursor=db.rawQuery("SELECT * FROM record;", null);
+        cursor.moveToFirst();
         character = new Character(cursor.getString(cursor.getColumnIndex("name")),
                 cursor.getFloat(cursor.getColumnIndex("height")),
                 cursor.getFloat(cursor.getColumnIndex("weight")),
@@ -30,16 +35,28 @@ public class MainActivity extends AppCompatActivity {
                 cursor.getInt(cursor.getColumnIndex("level")),
                 cursor.getInt(cursor.getColumnIndex("experience")),
                 cursor.getInt(cursor.getColumnIndex("calorie")));
+
         cursor.close();
 
         if(character.getCharacter() == 0)
         {
-            startActivity(new Intent(MainActivity.this,FirstSetting.class));
+            startActivityForResult(new Intent(MainActivity.this,FirstSetting.class),0);
         }
 
         Thread system = new Thread(new Calculate_Experience());
         system.setDaemon(true);
         system.start();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(requestCode == 0)
+        {
+            if(resultCode == RESULT_OK)
+            {
+
+            }
+        }
     }
 
     public void ButtonClick(View view) {
@@ -60,13 +77,15 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             while(true) {
                 try {
-                    Thread.sleep(60000);
+                    Log.i("Thread Check","Thread OK");
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     ;
                 }
             }
         }
     }
+
     public class DBHelper extends SQLiteOpenHelper {
         public DBHelper(@Nullable Context context) {
             super(context, "record.db", null, 1);
@@ -88,16 +107,16 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        public void update(String name,float height, float weight,int level,int experience,int character, int calorie) {
+        public void update() {
             // 읽고 쓰기가 가능하게 DB 열기
             SQLiteDatabase db = getWritableDatabase();
-            db.execSQL("UPDATE record SET name='"+name+"' WHERE _id = 1;");
-            db.execSQL("UPDATE record SET height="+height+" WHERE _id = 1;");
-            db.execSQL("UPDATE record SET weight="+weight+" WHERE _id = 1;");
-            db.execSQL("UPDATE record SET level="+level+" WHERE _id = 1;");
-            db.execSQL("UPDATE record SET experience="+experience+" WHERE _id = 1;");
-            db.execSQL("UPDATE record SET character="+character+" WHERE _id = 1;");
-            db.execSQL("UPDATE record SET calorie="+calorie+" WHERE _id = 1;");
+            db.execSQL("UPDATE record SET name='"+character.getName()+"' WHERE _id = 1;");
+            db.execSQL("UPDATE record SET height="+character.getHeight()+" WHERE _id = 1;");
+            db.execSQL("UPDATE record SET weight="+character.getWeight()+" WHERE _id = 1;");
+            db.execSQL("UPDATE record SET level="+character.getLevel().getLevel()+" WHERE _id = 1;");
+            db.execSQL("UPDATE record SET experience="+character.getLevel().getCurrentExperience()+" WHERE _id = 1;");
+            db.execSQL("UPDATE record SET character="+character.getCharacter()+" WHERE _id = 1;");
+            db.execSQL("UPDATE record SET calorie="+character.getCalories() +" WHERE _id = 1;");
             db.close();
         }
     }
