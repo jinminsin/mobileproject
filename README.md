@@ -6,6 +6,7 @@
 - 11/30 MainActivity.java commit
   - dbhelper.class table record, id only 1, field name,height,weight,level,experience, character, calorie
   
+-
 - 12/04 Charactr.java upgrade
   - 경험치 계산 함수 및 getter& setter 추가  
 - 12/04 FirstSetting.java commit
