@@ -1,22 +1,30 @@
 package com.example.healthyapp;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     private DBHelper helper;
     private SQLiteDatabase db;
     private Character character;
     private Cursor cursor;
+    private Handler status;
+
+    private TextView lvText;
+    private TextView heightText;
+    private TextView weightText;
+    private TextView calorieText;
+    private TextView ExpText;
+    private boolean Play=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +34,13 @@ public class MainActivity extends AppCompatActivity {
         helper = new DBHelper(this);
         db = helper.getWritableDatabase();
 
-        cursor=db.rawQuery("SELECT * FROM record;", null);
+        lvText = findViewById(R.id.textLv);
+        heightText = findViewById(R.id.textheight);
+        weightText = findViewById(R.id.textweight);
+        calorieText = findViewById(R.id.textcalorie);
+        ExpText = findViewById(R.id.textExp);
+
+        cursor = db.rawQuery("SELECT * FROM record;", null);
         cursor.moveToFirst();
         character = new Character(cursor.getString(cursor.getColumnIndex("name")),
                 cursor.getFloat(cursor.getColumnIndex("height")),
@@ -38,9 +52,20 @@ public class MainActivity extends AppCompatActivity {
 
         cursor.close();
 
-        if(character.getCharacter() == 0)
-        {
-            startActivityForResult(new Intent(MainActivity.this,FirstSetting.class),0);
+        status = new Handler(new Handler.Callback(){
+            @Override
+            public boolean handleMessage(Message msg) {
+                lvText.setText("Lv : " + character.getLevel().getLevel());
+                heightText.setText("키 : " + character.getHeight());
+                weightText.setText("몸무게 : " + character.getWeight());
+                calorieText.setText("소모 칼로리 : " + character.getCalories());
+                ExpText.setText("EXP : (" + character.getLevel().getCurrentExperience() + "/" + character.getLevel().getMaxExperience() + ")");
+                return true;
+            }
+        });
+
+        if (character.getCharacter() == 0) {
+            startActivityForResult(new Intent(MainActivity.this, FirstSetting.class), 0);
         }
 
         Thread system = new Thread(new Calculate_Experience());
@@ -49,19 +74,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(requestCode == 0)
-        {
-            if(resultCode == RESULT_OK)
-            {
-
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                character.setName(data.getStringExtra("name"));
+                character.setHeight(data.getFloatExtra("height", 0));
+                character.setWeight(data.getFloatExtra("weight", 0));
+                character.setCharacter(data.getIntExtra("character", 0));
+                character.getLevel().setLevel(1);
+                helper.update(character);
             }
         }
     }
 
     public void ButtonClick(View view) {
-        switch(view.getId())
-        {
+        switch (view.getId()) {
             case R.id.buttonGPS:
                 break;
             case R.id.buttondetail:
@@ -71,14 +98,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public class Calculate_Experience implements Runnable
-    {
+    public class Calculate_Experience implements Runnable {
         @Override
         public void run() {
-            while(true) {
+            while (Play) {
                 try {
-                    Log.i("Thread Check","Thread OK");
-                    Thread.sleep(1000);
+                    status.sendMessage(Message.obtain(status,1,0,0));
+                    Thread.sleep(60000);
                 } catch (InterruptedException e) {
                     ;
                 }
@@ -86,38 +112,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public class DBHelper extends SQLiteOpenHelper {
-        public DBHelper(@Nullable Context context) {
-            super(context, "record.db", null, 1);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase sqLiteDatabase) {
-            sqLiteDatabase.execSQL("CREATE TABLE record " +
-                    "(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    " name TEXT, height FLOAT, weight FLOAT, character INTEGER ,level INTEGER, experience INTEGER, calorie INTEGER);");
-
-            sqLiteDatabase.execSQL("INSERT INTO record" +
-                    " (name, height, weight, character, level, experience, calorie)" +
-                    " VALUES ('human',0,0,0,0,0,0);");//초기레코드
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
-        }
-
-        public void update() {
-            // 읽고 쓰기가 가능하게 DB 열기
-            SQLiteDatabase db = getWritableDatabase();
-            db.execSQL("UPDATE record SET name='"+character.getName()+"' WHERE _id = 1;");
-            db.execSQL("UPDATE record SET height="+character.getHeight()+" WHERE _id = 1;");
-            db.execSQL("UPDATE record SET weight="+character.getWeight()+" WHERE _id = 1;");
-            db.execSQL("UPDATE record SET level="+character.getLevel().getLevel()+" WHERE _id = 1;");
-            db.execSQL("UPDATE record SET experience="+character.getLevel().getCurrentExperience()+" WHERE _id = 1;");
-            db.execSQL("UPDATE record SET character="+character.getCharacter()+" WHERE _id = 1;");
-            db.execSQL("UPDATE record SET calorie="+character.getCalories() +" WHERE _id = 1;");
-            db.close();
-        }
+    @Override
+    protected void onDestroy() {
+        Play=false;
+        super.onDestroy();
     }
 }

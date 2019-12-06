@@ -33,8 +33,8 @@ public class FirstSetting extends AppCompatActivity {
 
                 Intent result = new Intent();
                 result.putExtra("name",nameText.getText().toString());
-                result.putExtra("height",heightText.getText().toString());
-                result.putExtra("weight",weightText.getText().toString());
+                result.putExtra("height",Float.parseFloat(heightText.getText().toString()));
+                result.putExtra("weight",Float.parseFloat(weightText.getText().toString()));
                 switch(characterChecked.getCheckedRadioButtonId())
                 {
                     case R.id.character1Button:
