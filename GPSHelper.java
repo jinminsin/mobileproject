@@ -26,7 +26,7 @@ public class GPSHelper {
             public void onLocationChanged (Location location) {
                 distanceGPS = location.distanceTo(prevLocation) * 3.6f;
                 showNewLocation(act, location);
-                prevLocation = location;
+                prevLocation.set(location);
             }
 
             @Override
@@ -75,7 +75,7 @@ public class GPSHelper {
 
         // Distance
         txt = (EditText) act.findViewById(R.id.editText4);
-        txt.setText(" " + String.valueOf(distanceGPS));
+        txt.setText(" " + distanceGPS);
 
     } // showNewLocation
 }
