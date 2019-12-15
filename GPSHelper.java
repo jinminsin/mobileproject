@@ -15,13 +15,18 @@ import androidx.core.app.ActivityCompat;
 
 public class GPSHelper {
 
+    private static Location prevLocation = new Location("starting_point");
+    public static float distanceGPS = 0;
+
     public static void initGPS(final Activity act) {
         LocationManager locationManager = (LocationManager) act.getSystemService(Context.LOCATION_SERVICE);
 
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged (Location location) {
+                distanceGPS = location.distanceTo(prevLocation) * 3.6f;
                 showNewLocation(act, location);
+                prevLocation = location;
             }
 
             @Override
@@ -50,60 +55,27 @@ public class GPSHelper {
     }
 
     public static void showNewLocation(Activity act, Location location) { // ver 1
-        // Provider
-        EditText txt = (EditText) act.findViewById(R.id.editText1);
-        txt.setText(location.getProvider());
-
-        // Accuracy
-        txt = (EditText) act.findViewById(R.id.editText2);
-        if (location.hasAccuracy()) {
-            txt.setText(" " + location.getAccuracy());
-        } else {
-            txt.setText("Unknown");
-        }
+        EditText txt;
 
         // Longitude
-        txt = (EditText) act.findViewById(R.id.editText3);
+        txt = (EditText) act.findViewById(R.id.editText1);
         txt.setText(" " + location.getLongitude());
 
         // Latitude
-        txt = (EditText) act.findViewById(R.id.editText4);
+        txt = (EditText) act.findViewById(R.id.editText2);
         txt.setText(" " + location.getLatitude());
 
         // Altitude
-        txt = (EditText) act.findViewById(R.id.editText5);
+        txt = (EditText) act.findViewById(R.id.editText3);
         if (location.hasAltitude()) {
             txt.setText(" " + location.getAltitude());
         } else {
             txt.setText("Unknown");
         }
 
-        // Time
-        txt = (EditText) act.findViewById(R.id.editText6);
-        txt.setText(" " + location.getTime());
+        // Distance
+        txt = (EditText) act.findViewById(R.id.editText4);
+        txt.setText(" " + String.valueOf(distanceGPS));
 
-        // Bearing
-        txt = (EditText) act.findViewById(R.id.editText7);
-        if (location.hasBearing()) {
-            txt.setText(" " + location.getBearing());
-        } else {
-            txt.setText("Unknown");
-        }
-
-        // Speed
-        txt = (EditText) act.findViewById(R.id.editText8);
-        if (location.hasSpeed()) {
-            txt.setText(" " + location.getSpeed());
-        } else {
-            txt.setText("Unknown");
-        }
-
-        // Extras
-        txt = (EditText) act.findViewById(R.id.editText9);
-        if (location.getExtras() != null) {
-            txt.setText(location.getExtras().toString());
-        } else {
-            txt.setText("None");
-        }
     } // showNewLocation
 }

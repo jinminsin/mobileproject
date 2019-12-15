@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     static final Integer APP_PERMISSION = 1;
     SensorHelper sensor;
+    SensorHelper2 sensor2;
 
     private void askForPermission (String permission, Integer requestCode) {
         if (ContextCompat.checkSelfPermission(MainActivity.this, permission)
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sensor = new SensorHelper(this);
+        sensor2 = new SensorHelper2(this);
         setContentView(R.layout.activity_main);
     } // onCreate
 
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume () {
         super.onResume();
         sensor.onResume();
+        sensor2.onResume();
         askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, APP_PERMISSION);
 
         GPSHelper.initGPS(this);
@@ -64,6 +67,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         sensor.onDestroy();
+        sensor2.onDestroy();
+    }
+
+    public double voting() {
+        // less than 2 = does not count
+        // more than 28 = does not count
+
+        // check for turning
+        if (sensor2.turning) return 0.0;
+
+        // check for if nonzero gps is within sensor, if so return gps
+        if (GPSHelper.distanceGPS > 0 && GPSHelper.distanceGPS - sensor.dist < 5) return GPSHelper.distanceGPS;
+
+        // otherwise, return sensor
+        return sensor.dist;
     }
 
 }
