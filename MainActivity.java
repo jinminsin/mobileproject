@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private Cursor cursor;
     private Handler status;
 
+    private ImageView characterImage;
     private TextView nameText;
     private TextView lvText;
     private TextView heightText;
@@ -35,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        characterImage = findViewById(R.id.characterImage);
 
         nameText= findViewById(R.id.textName);
         lvText = findViewById(R.id.textLv);
@@ -58,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if(!system.isAlive()){
+        if(character.getCharacter() != 0 && !system.isAlive()){
             status.sendMessage(Message.obtain(status, 1, 0, 0));
             Play=true;
             system.start();
@@ -130,6 +134,31 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean handleMessage(Message msg) {
                 updateCharacter();
+                if(character.getCharacter() == 1)
+                {
+                    if(character.getLevel().getLevel() <= 5)
+                        characterImage.setImageResource(R.drawable.a1);
+                    else if(character.getLevel().getLevel() <= 10)
+                        characterImage.setImageResource(R.drawable.a2);
+                    else
+                        characterImage.setImageResource(R.drawable.a3);
+                }else if(character.getCharacter() == 2)
+                {
+                    if(character.getLevel().getLevel() <= 5)
+                        characterImage.setImageResource(R.drawable.b1);
+                    else if(character.getLevel().getLevel() <= 10)
+                        characterImage.setImageResource(R.drawable.b2);
+                    else
+                        characterImage.setImageResource(R.drawable.b3);
+                }else
+                {
+                    if(character.getLevel().getLevel() <= 5)
+                        characterImage.setImageResource(R.drawable.c1);
+                    else if(character.getLevel().getLevel() <= 10)
+                        characterImage.setImageResource(R.drawable.c2);
+                    else
+                        characterImage.setImageResource(R.drawable.c3);
+                }
                 nameText.setText("어서오세요! "+character.getName()+" 님!");
                 lvText.setText("Lv : " + character.getLevel().getLevel());
                 heightText.setText("키 : " + character.getHeight());

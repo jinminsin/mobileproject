@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 
 public class FirstSetting extends AppCompatActivity {
@@ -20,6 +21,9 @@ public class FirstSetting extends AppCompatActivity {
     private EditText heightText;
     private EditText weightText;
     private RadioGroup characterChecked;
+    private ImageView character1;
+    private ImageView character2;
+    private ImageView character3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,13 @@ public class FirstSetting extends AppCompatActivity {
         heightText = findViewById(R.id.editHeight);
         weightText = findViewById(R.id.editWeight);
         characterChecked = findViewById(R.id.characterButton);
+        character1=findViewById(R.id.character1);
+        character2=findViewById(R.id.character2);
+        character3=findViewById(R.id.character3);
+
+        character1.setImageResource(R.drawable.profile_a);
+        character2.setImageResource(R.drawable.profile_b);
+        character3.setImageResource(R.drawable.profile_c);
     }
 
     public void onClickbutton(View view) {
