@@ -3,12 +3,19 @@ package com.example.healthyapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
 public class FirstSetting extends AppCompatActivity {
+    private DBHelper helper;
+    private SQLiteDatabase db;
+    private Character character;
+    private Cursor cursor;
+
     private EditText nameText;
     private EditText heightText;
     private EditText weightText;
@@ -18,6 +25,9 @@ public class FirstSetting extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_setting);
+
+        helper = new DBHelper(this);
+        character = new Character("human",0,0,0,0,0,0,0,0,0);//초기화
 
         nameText = findViewById(R.id.editName);
         heightText = findViewById(R.id.editHeight);
@@ -31,27 +41,38 @@ public class FirstSetting extends AppCompatActivity {
             case R.id.completebutton:
                 if(nameText.length() == 0 || heightText.length() == 0 || weightText.length() == 0) return;
 
-                Intent result = new Intent();
-                result.putExtra("name",nameText.getText().toString());
-                result.putExtra("height",Float.parseFloat(heightText.getText().toString()));
-                result.putExtra("weight",Float.parseFloat(weightText.getText().toString()));
+                character.setName(nameText.getText().toString());
+                character.setHeight(Float.parseFloat(heightText.getText().toString()));
+                character.setWeight(Float.parseFloat(weightText.getText().toString()));
+
                 switch(characterChecked.getCheckedRadioButtonId())
                 {
                     case R.id.character1Button:
-                        result.putExtra("character",1);
+                        character.setCharacter(1);
                         break;
                     case R.id.character2Button:
-                        result.putExtra("character",2);
+                        character.setCharacter(2);
                         break;
                     case R.id.character3Button:
-                        result.putExtra("character",3);
+                        character.setCharacter(3);
                         break;
                 }
-                setResult(RESULT_OK,result);
+                character.getLevel().setLevel(1);
+                helper.update(character);
+                setResult(RESULT_OK);
                 finish();
                 break;
             case R.id.resetbutton:
+                nameText.setText("");
+                heightText.setText("");
+                weightText.setText("");
+                characterChecked.clearCheck();
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 }

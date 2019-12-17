@@ -5,24 +5,21 @@ public class Character {
     private float height;//키
     private float weight;//몸무게
     private int calories;//칼로리
-    private int sleep_time;//수면 시간
-    private int wake_time;//기상 시간
     private Level level;//레벨
     private int character;//캐릭터 이미지
+    private int step;
+    private float distance;
 
-    public static int getHours(int time) { return time / 60; }
-    public static int getMinutes(int time) { return time % 60; }
-
-    public Character(String name, float height, float weight,int character,int level,int experience,int calories)
+    public Character(String name, float height, float weight,int character,int level,int currentExp,float negativeExp, int calories,int step,float distance)
     {
         this.name=name;
         this.height=height;
         this.weight=weight;
         this.character=character;
-        sleep_time=-1;//default
-        wake_time=-1;//default
-        this.level = new Level(level,experience);
+        this.level = new Level(level,currentExp,negativeExp);
         this.calories=calories;
+        this.step=step;
+        this.distance=distance;
     }
 
     public void CalorieAcquisition(int minute, float Mets)
@@ -94,17 +91,33 @@ public class Character {
         this.calories = calories;
     }
 
+    public int getStep() {
+        return step;
+    }
+
+    public void setStep(int step) {
+        this.step = step;
+    }
+
+    public float getDistance() {
+        return distance;
+    }
+
+    public void setDistance(float distance) {
+        this.distance = distance;
+    }
+
     public class Level {
         private int level;
         private int currentExperience;//현재경험치
-        private int negativeExperience;//감소 경험치, 일정기간 이동하지 않다가 다시 이동하게 되면 증가됨.
+        private float negativeExperience;//감소 경험치, 일정기간 이동하지 않다가 다시 이동하게 되면 증가됨.
         private long last_exercised; // 오랫동안 이동하지 않을 시 기록
         private int decrement_count; // 경고 알림, 일정 속도 이상의 이동 시에 초기화, 오랫동안 이동하지 않을 시 증가
 
-        public Level(int level, int experience) {
+        public Level(int level, int positiveExperience,float negativeExperience) {
             this.level=level;
-            this.currentExperience=experience;
-            negativeExperience=0;
+            this.currentExperience=positiveExperience;
+            this.negativeExperience=negativeExperience;
             last_exercised=0;
             decrement_count=0;
         }
@@ -120,6 +133,14 @@ public class Character {
         public int getCurrentExperience() {
             return currentExperience;
         }
+        public void setCurrentExperience(int currentExperience)
+        {
+            this.currentExperience=currentExperience;
+        }
+
+        public long getLast_exercised() {
+            return last_exercised;
+        }
 
         public void levelUp()
         {
@@ -127,7 +148,7 @@ public class Character {
             level++;
         }
 
-        public void dropExp()
+        public void negativeAcquisition()
         {
             negativeExperience += (int)(((System.currentTimeMillis() - last_exercised) / 3110400)/1000);
         }
@@ -136,13 +157,17 @@ public class Character {
         {
             decrement_count++;
         }
+        public int getDecrement_count()
+        {
+            return decrement_count;
+        }
 
         public int getMaxExperience()
         {
             return (int)(Math.sqrt(level)*100);
         }
 
-        public void ExpAcquisition(int exp)
+        public void expAcquisition(int exp)
         {
             //경험치 계산
             currentExperience += exp;
@@ -150,5 +175,13 @@ public class Character {
             // 비만도 =  negativeExperience ( 감소 )
             if(currentExperience < 0) currentExperience = 0;
         }//계산
+
+        public float getNegativeExperience() {
+            return negativeExperience;
+        }
+        public void setNegativeExperience(float negativeExperience)
+        {
+            this.negativeExperience=negativeExperience;
+        }
     }
 }
