@@ -33,11 +33,13 @@
      (Main - Character/ Detail - Character, Setting / AppSetting - setting / NoticeGoal - setting / Background - character, setting)
    - App 설정에 따라 갱신 주기 변경 가능하게 변경
    - 각 기능 Background 제외 세부 구현 완료
+   - 이미지 세팅
    - 위젯 구현 중
    
  - FirstSetting.java
    - character 객체를 db에 효과적으로 전달하기 위한 생성
    - character(first-set) -> DB -> result -> character(main) 루트로 데이터 변경
+   - 이미지 프로필 세팅
  
  - DetailScreen.java
    - 두 객체를 DB로부터 생성하여 주기적으로 변경하게 변경.
