@@ -33,6 +33,7 @@
      (Main - Character/ Detail - Character, Setting / AppSetting - setting / NoticeGoal - setting / Background - character, setting)
    - App 설정에 따라 갱신 주기 변경 가능하게 변경
    - 각 기능 Background 제외 세부 구현 완료
+   - 위젯 구현 중
    
  - FirstSetting.java
    - character 객체를 db에 효과적으로 전달하기 위한 생성
@@ -52,3 +53,11 @@
    - 위와 동일
    - 기록 삭제시 메인으로 돌아가 character의 객체 수정이 실행 되도록 함.
    - 캐릭터 삭제시 처음으로 되돌아가도록 편성함.
+
+ - Notification.java
+   - 알림 
+   
+ - Background.java
+   - service, 강제 종료 되더라도 새로 실행하도록 리턴
+   - 계산식 구현 중 ( 성장도, 비만도 )
+   - 스레드 3개 구현 중(메인 - 데이터 베이스 적용, 1 가상스레드 - 성장도, 2 가상스레드 - 비만도)
