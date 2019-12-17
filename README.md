@@ -34,7 +34,7 @@
    - App 설정에 따라 갱신 주기 변경 가능하게 변경
    - 각 기능 Background 제외 세부 구현 완료
    - 이미지 세팅
-   - 위젯 합치기 대기 중(AppSetting으로부터 설정값을 받아 메인에서 class 선언과  함수 시행)
+   - 위젯 합치기 대기 중
    
  - FirstSetting.java
    - character 객체를 db에 효과적으로 전달하기 위한 생성
@@ -57,7 +57,7 @@
    - 캐릭터 삭제시 처음으로 되돌아가도록 편성함.
 
  - Notification.java
-   - 알림 합치는 것 대기 중(Background로부터 시행될 예정)
+   - 알림 합치는 것 대기 중
    
  - Background.java
    - service, 강제 종료 되더라도 새로 실행하도록 리턴
