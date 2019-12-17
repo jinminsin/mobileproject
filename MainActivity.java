@@ -55,12 +55,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    protected void onResume() {
+        super.onResume();
+
+        if(!system.isAlive()){
+            status.sendMessage(Message.obtain(status, 1, 0, 0));
+            Play=true;
+            system.start();
+        }
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 0) {//캐릭터 초기 설정
             if (resultCode == RESULT_OK) {
                 status.sendMessage(Message.obtain(status, 1, 0, 0));
-                Play=true;
+                Play = true;
                 system = new Thread(new updateScreen());
                 system.setDaemon(true);
                 system.start();
@@ -81,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                     character.setCalories(0);
                     helper.update(character);
                 }
-                
+
                 if(resultCode == 3)//캐릭터 삭제
                 {
                     Play = false;
@@ -156,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.buttonDetail://자세히 보기 ( 오늘 하루 걸은 거리 및 걸음 횟수 등 )
                 option = new Intent(MainActivity.this,DetailScreen.class);
+                Play=false;
+                system.interrupt();
                 startActivity(option);
                 break;
             case R.id.buttonSetting:// 수면 시간 설정, 갱신 간격 설정, 리셋(?), 기록 삭제
@@ -171,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
             while (Play) {
                 try {
                     status.sendMessage(Message.obtain(status,1,0,0));
-                    Thread.sleep(playtime*1000);
+                    Thread.sleep(playtime*100);
                 } catch (InterruptedException e) {
                     ;
                 }

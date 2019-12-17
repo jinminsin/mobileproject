@@ -102,7 +102,7 @@ public class AppSetting extends AppCompatActivity {
     public void onClickbutton(View view) {
         switch(view.getId()){
             case R.id.completebutton:
-                setting.setAppUpdateTime(Integer.parseInt(updateTime.getSelectedItem().toString()));
+                setting.setAppUpdateTime(Integer.parseInt(updateTime.getSelectedItem().toString().trim()));
                 setting.setSleepTime(sleepHour.getSelectedItemPosition()*60+sleepMinute.getSelectedItemPosition());
                 setting.setWakeTime(wakeHour.getSelectedItemPosition()*60+wakeMinute.getSelectedItemPosition());
                 helper.update(setting);

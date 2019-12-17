@@ -60,15 +60,15 @@ public class DBHelper extends SQLiteOpenHelper {
     public void update(Setting setting) {
         // 읽고 쓰기가 가능하게 DB 열기
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("UPDATE status SET stepNotice="+((setting.isStepNotice() == true) ? 1 : 0)+" WHERE _id = 1;");
-        db.execSQL("UPDATE status SET distanceNotice="+((setting.isDistanceNotice() == true) ? 1 : 0)+" WHERE _id = 1;");
-        db.execSQL("UPDATE status SET stepGoal="+setting.getStepGoal()+" WHERE _id = 1;");
-        db.execSQL("UPDATE status SET distanceGoal="+setting.getDistanceGoal()+" WHERE _id = 1;");
-        db.execSQL("UPDATE status SET goalTime="+setting.getGoalTime()+" WHERE _id = 1;");
-        db.execSQL("UPDATE status SET appUpdateTime="+setting.getAppUpdateTime()+" WHERE _id = 1;");
-        db.execSQL("UPDATE status SET sleepTime="+setting.getSleepTime()+" WHERE _id = 1;");
-        db.execSQL("UPDATE status SET wakeTime="+setting.getWakeTime()+" WHERE _id = 1;");
-        db.execSQL("UPDATE status SET setWidget="+((setting.isSetWidget() == true) ? 1 : 0)+" WHERE _id = 1;");
+        db.execSQL("UPDATE setting SET stepNotice="+((setting.isStepNotice() == true) ? 1 : 0)+" WHERE _id = 1;");
+        db.execSQL("UPDATE setting SET distanceNotice="+((setting.isDistanceNotice() == true) ? 1 : 0)+" WHERE _id = 1;");
+        db.execSQL("UPDATE setting SET stepGoal="+setting.getStepGoal()+" WHERE _id = 1;");
+        db.execSQL("UPDATE setting SET distanceGoal="+setting.getDistanceGoal()+" WHERE _id = 1;");
+        db.execSQL("UPDATE setting SET goalTime="+setting.getGoalTime()+" WHERE _id = 1;");
+        db.execSQL("UPDATE setting SET appUpdateTime="+setting.getAppUpdateTime()+" WHERE _id = 1;");
+        db.execSQL("UPDATE setting SET sleepTime="+setting.getSleepTime()+" WHERE _id = 1;");
+        db.execSQL("UPDATE setting SET wakeTime="+setting.getWakeTime()+" WHERE _id = 1;");
+        db.execSQL("UPDATE setting SET setWidget="+((setting.isSetWidget() == true) ? 1 : 0)+" WHERE _id = 1;");
         db.close();
     }
 }
