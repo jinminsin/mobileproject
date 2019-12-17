@@ -26,3 +26,29 @@
    - 세부 구현 레이아웃 구현 중
  
   
+## 12/17 update
+ - MainActivity.java
+   - 액티비티 간의 정보 전달 최소화, DB에 의한 설정 변경으로 이관
+   - DB에 의해 각 액티비티마다 객체를 형성하도록 변경
+     (Main - Character/ Detail - Character, Setting / AppSetting - setting / NoticeGoal - setting / Background - character, setting)
+   - App 설정에 따라 갱신 주기 변경 가능하게 변경
+   - 각 기능 Background 제외 세부 구현 완료
+   
+ - FirstSetting.java
+   - character 객체를 db에 효과적으로 전달하기 위한 생성
+   - character(first-set) -> DB -> result -> character(main) 루트로 데이터 변경
+ 
+ - DetailScreen.java
+   - 두 객체를 DB로부터 생성하여 주기적으로 변경하게 변경.
+   - 이 액티비티가 실행되면, 메인 액티비티의 데몬 스레드가 종료되면서, 이 액티비티의 데몬 스레드가 실행되도록 구성
+     (다시 메인으로 가면 반대로 실행)
+ 
+ - NoticeGoal.java
+   - setting의 객체로부터 데이터를 받아, 실행과 동시에 데이터가 입력상태가 되도록 함.
+   - 수정 시 변경할 수 있음.
+   - 초기화시 본래 객체 데이터로 되돌아감.
+   
+ - AppSetting.java
+   - 위와 동일
+   - 기록 삭제시 메인으로 돌아가 character의 객체 수정이 실행 되도록 함.
+   - 캐릭터 삭제시 처음으로 되돌아가도록 편성함.
