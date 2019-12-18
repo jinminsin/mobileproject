@@ -1,49 +1,34 @@
 package com.example.healthyapp;
 
+import android.util.Log;
+
 public class Character {
     private String name;//이름
     private float height;//키
     private float weight;//몸무게
-    private int calories;//칼로리
+    private float calories;//칼로리
     private Level level;//레벨
     private int character;//캐릭터 이미지
     private int step;
     private float distance;
 
-    public Character(String name, float height, float weight,int character,int level,int currentExp,float negativeExp, int calories,int step,float distance)
+    public Character(String name, float height, float weight,int character,int level,float currentExp,float negativeExp, float calories,int step,float distance,long last_exercised)
     {
         this.name=name;
         this.height=height;
         this.weight=weight;
         this.character=character;
-        this.level = new Level(level,currentExp,negativeExp);
+        this.level = new Level(level,currentExp,negativeExp,last_exercised);
         this.calories=calories;
         this.step=step;
         this.distance=distance;
     }
 
-    public void CalorieAcquisition(int minute, float Mets)
+    public void CalorieAcquisition(float minute, float Mets)
     {
         //칼로리 계산
         calories+=minute*0.0175*Mets*weight;
         // duration * 0.0175 * Mets * weight(kg)
-            /*
-               걷기 (느리게) - 3km/h 147 2.0
-               걷기 (중간) - 5km/h 243 3.3
-               걷기 (운동) - 5.5km/h 279 3.8
-               자전거 (여유롭게) - <16km/h 294 4.0
-               걷기(힘차게) - 6.5km/h 368 5.0
-               스케이팅 - 16km/h 368 5.0
-               자전거 (느린속도) - 18km/h 441 6.0
-               달리기(조깅) - 8km/h 588 8.0
-               달리기 - 10km/h 735 10.0
-               자전거 (빠른속도) - 24km/h 735 10.0
-               달리기 - 11km/h 845 11.5
-               자전거 (매우 빠른속도) - 28km/h 882 12.0
-               달리기 - 13km/h 992 13.5
-               달리기 - 14.5km/h 1102 15.0
-               달리기 - 16km/h 1176 16.0
-            */
     }//계산
 
     public int getCharacter()
@@ -83,11 +68,11 @@ public class Character {
         this.weight = weight;
     }
 
-    public int getCalories() {
+    public float getCalories() {
         return calories;
     }
 
-    public void setCalories(int calories) {
+    public void setCalories(float calories) {
         this.calories = calories;
     }
 
@@ -109,16 +94,16 @@ public class Character {
 
     public class Level {
         private int level;
-        private int currentExperience;//현재경험치
+        private float currentExperience;//현재경험치
         private float negativeExperience;//감소 경험치, 일정기간 이동하지 않다가 다시 이동하게 되면 증가됨.
         private long last_exercised; // 오랫동안 이동하지 않을 시 기록
         private int decrement_count; // 경고 알림, 일정 속도 이상의 이동 시에 초기화, 오랫동안 이동하지 않을 시 증가
 
-        public Level(int level, int positiveExperience,float negativeExperience) {
+        public Level(int level, float positiveExperience,float negativeExperience,long last_exercised) {
             this.level=level;
             this.currentExperience=positiveExperience;
             this.negativeExperience=negativeExperience;
-            last_exercised=0;
+            this.last_exercised=last_exercised;
             decrement_count=0;
         }
 
@@ -130,16 +115,24 @@ public class Character {
         }
 
 
-        public int getCurrentExperience() {
+        public float getCurrentExperience() {
             return currentExperience;
         }
-        public void setCurrentExperience(int currentExperience)
+        public void setCurrentExperience(float currentExperience)
         {
             this.currentExperience=currentExperience;
         }
 
         public long getLast_exercised() {
             return last_exercised;
+        }
+        public void setLast_exercised(long last_exercised)
+        {
+            this.last_exercised=last_exercised;
+        }
+        public void setLast_exercisedtoCurrent()
+        {
+            last_exercised=System.currentTimeMillis();
         }
 
         public void levelUp()
@@ -148,9 +141,12 @@ public class Character {
             level++;
         }
 
-        public void negativeAcquisition()
+        public void negativeAcquisition(long last_exercised)
         {
-            negativeExperience += (int)(((System.currentTimeMillis() - last_exercised) / 3110400)/1000);
+            negativeExperience += (((float)(System.currentTimeMillis() - last_exercised) / (60* 60 * 24 * 3))/5);
+            // 이틀간 1680kcal 이동치만큼을 이동한다고 가정(120*0.0175*5*80 * 2), 약 168 경험치를 얻게 됨.
+            // 따라서 60 * 60 * 24 * 3으로 나누고 ms 단위 다시 그 값에 1000을 나눔.
+            // 그리고 약 3개월에 이틀분의 치를 빼기 위해서 200을 곱함.(걷기만 하는 것이 아니라 뛰기도 하기 때문)
         }
 
         public void countDecrement()
@@ -161,13 +157,17 @@ public class Character {
         {
             return decrement_count;
         }
+        public void setDecrement_count(int decrement_count)
+        {
+            this.decrement_count = decrement_count;
+        }
 
         public int getMaxExperience()
         {
             return (int)(Math.sqrt(level)*100);
         }
 
-        public void expAcquisition(int exp)
+        public void expAcquisition(float exp)
         {
             //경험치 계산
             currentExperience += exp;

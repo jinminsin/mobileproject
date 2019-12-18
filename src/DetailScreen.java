@@ -48,8 +48,6 @@ public class DetailScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_screen);
 
-
-
         nameText= findViewById(R.id.textName);
         lvText = findViewById(R.id.textLv);
         heightText = findViewById(R.id.textHeight);
@@ -68,6 +66,22 @@ public class DetailScreen extends AppCompatActivity {
 
         initializeDB();
 
+        status = new Handler(new Handler.Callback(){
+            @Override
+            public boolean handleMessage(Message msg) {
+                updateCharacter();
+                lvText.setText("Lv : " + character.getLevel().getLevel());
+                calorieText.setText("칼로리 : " +  String.format("%.2f",character.getCalories())+" kcal");
+                stepText.setText("누적 걸음 수 : "+character.getStep()+" 걸음");
+                distanceText.setText("누적 이동 거리 : "+String.format("%.2f",character.getDistance())+" km");
+                negativeExpText.setText("비만도 : "+String.format("%.2f",character.getLevel().getNegativeExperience()));
+                lastExercisedText.setText((new SimpleDateFormat("- yyyy/MM/dd (E) HH:mm")).format(character.getLevel().getLast_exercised()));
+                positiveExpText.setText("현재 경험치 : "+String.format("%.2f",character.getLevel().getCurrentExperience()));
+                maxExpText.setText("필요 경험치 : "+character.getLevel().getMaxExperience());
+                return true;
+            }
+        });
+
         system = new Thread(new updateScreen());
         system.setDaemon(true);
         system.start();
@@ -85,11 +99,12 @@ public class DetailScreen extends AppCompatActivity {
                 cursor.getFloat(cursor.getColumnIndex("weight")),
                 cursor.getInt(cursor.getColumnIndex("character")),
                 cursor.getInt(cursor.getColumnIndex("level")),
-                cursor.getInt(cursor.getColumnIndex("currentExp")),
+                cursor.getFloat(cursor.getColumnIndex("currentExp")),
                 cursor.getFloat(cursor.getColumnIndex("negativeExp")),
-                cursor.getInt(cursor.getColumnIndex("calorie")),
+                cursor.getFloat(cursor.getColumnIndex("calorie")),
                 cursor.getInt(cursor.getColumnIndex("dayStep")),
-                cursor.getFloat(cursor.getColumnIndex("dayDistance")));
+                cursor.getFloat(cursor.getColumnIndex("dayDistance")),
+                cursor.getLong(cursor.getColumnIndex("last_exercised")));
         cursor.close();
 
         cursor = db.rawQuery("SELECT * FROM setting;", null);
@@ -104,37 +119,32 @@ public class DetailScreen extends AppCompatActivity {
                 cursor.getInt(cursor.getColumnIndex("wakeTime")),
                 cursor.getInt(cursor.getColumnIndex("setWidget"))==1);
         cursor.close();
+        db.close();
 
-        status = new Handler(new Handler.Callback(){
-            @Override
-            public boolean handleMessage(Message msg) {
-                updateCharacter();
-                nameText.setText("이름 : "+character.getName());
-                lvText.setText("Lv : " + character.getLevel().getLevel());
-                heightText.setText("키 : " + character.getHeight()+" cm");
-                weightText.setText("몸무게 : " + character.getWeight()+ " kg");
-                sleepTimeText.setText("수면 시간 : "+String.format("%02d",setting.getHours(setting.getSleepTime()))+
-                        ":"+String.format("%02d",setting.getMinutes(setting.getSleepTime()))+"~"+
-                        String.format("%02d",setting.getHours(setting.getWakeTime()))+":"+
-                        String.format("%02d",setting.getMinutes(setting.getWakeTime())));
-                stepGoalText.setText("일일 목표 걸음 수 : "+setting.getStepGoal()+" 걸음");
-                distanceGoalText.setText("일일 목표 이동 거리 : "+setting.getDistanceGoal()+ " km");
+        nameText.setText("이름 : "+character.getName());
+        lvText.setText("Lv : " + character.getLevel().getLevel());
+        heightText.setText("키 : " + character.getHeight()+" cm");
+        weightText.setText("몸무게 : " + character.getWeight()+ " kg");
+        sleepTimeText.setText("수면 시간 : "+String.format("%02d",setting.getHours(setting.getSleepTime()))+
+                ":"+String.format("%02d",setting.getMinutes(setting.getSleepTime()))+"~"+
+                String.format("%02d",setting.getHours(setting.getWakeTime()))+":"+
+                String.format("%02d",setting.getMinutes(setting.getWakeTime())));
+        stepGoalText.setText("일일 목표 걸음 수 : "+setting.getStepGoal()+" 걸음");
+        distanceGoalText.setText("일일 목표 이동 거리 : "+setting.getDistanceGoal()+ " km");
 
-                calorieText.setText("칼로리 : " + character.getCalories()+" kcal");
-                stepText.setText("누적 걸음 수 : "+character.getStep()+" 걸음");
-                distanceText.setText("누적 이동 거리 : "+String.format("%.2f",character.getDistance())+" km");
+        calorieText.setText("칼로리 : " + String.format("%.2f",character.getCalories())+" kcal");
+        stepText.setText("누적 걸음 수 : "+character.getStep()+" 걸음");
+        distanceText.setText("누적 이동 거리 : "+String.format("%.2f",character.getDistance())+" km");
 
-                negativeExpText.setText("비만도 : "+String.format("%.2f",character.getLevel().getNegativeExperience()));
-                lastExercisedText.setText((new SimpleDateFormat("- yyyy/MM/dd (E) HH:mm")).format(character.getLevel().getLast_exercised()));
-                positiveExpText.setText("현재 경험치 : "+character.getLevel().getCurrentExperience());
-                maxExpText.setText("필요 경험치 : "+character.getLevel().getMaxExperience());
-                return true;
-            }
-        });
+        negativeExpText.setText("비만도 : "+String.format("%.2f",character.getLevel().getNegativeExperience()));
+        lastExercisedText.setText((new SimpleDateFormat("- yyyy/MM/dd (E) HH:mm")).format(character.getLevel().getLast_exercised()));
+        positiveExpText.setText("현재 경험치 : "+String.format("%.2f",character.getLevel().getCurrentExperience()));
+        maxExpText.setText("필요 경험치 : "+String.format("%.2f",character.getLevel().getCurrentExperience()));
     }
 
     public void updateCharacter()
     {
+        db = helper.getWritableDatabase();
         cursor = db.rawQuery("SELECT * FROM status;", null);
         cursor.moveToFirst();
         character.setName(cursor.getString(cursor.getColumnIndex("name")));
@@ -142,12 +152,14 @@ public class DetailScreen extends AppCompatActivity {
         character.setWeight(cursor.getFloat(cursor.getColumnIndex("weight")));
         character.setCharacter(cursor.getInt(cursor.getColumnIndex("character")));
         character.getLevel().setLevel(cursor.getInt(cursor.getColumnIndex("level")));
-        character.getLevel().setCurrentExperience(cursor.getInt(cursor.getColumnIndex("currentExp")));
+        character.getLevel().setCurrentExperience(cursor.getFloat(cursor.getColumnIndex("currentExp")));
         character.getLevel().setNegativeExperience(cursor.getFloat(cursor.getColumnIndex("negativeExp")));
-        character.setCalories(cursor.getInt(cursor.getColumnIndex("calorie")));
+        character.setCalories(cursor.getFloat(cursor.getColumnIndex("calorie")));
         character.setStep(cursor.getInt(cursor.getColumnIndex("dayStep")));
         character.setDistance(cursor.getFloat(cursor.getColumnIndex("dayDistance")));
+        character.getLevel().setLast_exercised(cursor.getLong(cursor.getColumnIndex("last_exercised")));
         cursor.close();
+        db.close();
     }
 
     public class updateScreen implements Runnable {

@@ -16,7 +16,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("CREATE TABLE status " +
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "name TEXT, height FLOAT, weight FLOAT, character INTEGER ,level INTEGER, currentExp INTEGER, negativeExp FLOAT, calorie INTEGER, last_exercised INTEGER, dayStep INTEGER, dayDistance FLOAT);");
+                "name TEXT, height FLOAT, weight FLOAT, character INTEGER ,level INTEGER, currentExp FLOAT, negativeExp FLOAT, calorie FLOAT, last_exercised INTEGER, dayStep INTEGER, dayDistance FLOAT);");
         //캐릭터(이름, 키, 몸무게, 캐릭터 이미지, 레벨, 성장도, 비만도, 칼로리, 일일 누적 걸음, 일일 누적 거리)
 
         sqLiteDatabase.execSQL("CREATE TABLE setting " +
@@ -30,7 +30,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL("INSERT INTO setting" +
                 " (stepNotice, distanceNotice, stepGoal, distanceGoal, goalTime, appUpdateTime, sleepTime, wakeTime, setWidget)" +
-                " VALUES (0,0,0,0,0,60,0,0,0);");//초기레코드 세팅
+                " VALUES (0,0,0,0,0,60,1380,640,0);");//초기레코드 세팅
 
     }
 
@@ -53,7 +53,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("UPDATE status SET last_exercised="+character.getLevel().getLast_exercised()+" WHERE _id = 1;");
         db.execSQL("UPDATE status SET dayStep="+character.getStep()+" WHERE _id = 1;");
         db.execSQL("UPDATE status SET dayDistance="+character.getDistance()+" WHERE _id = 1;");
-
         db.close();
     }
 

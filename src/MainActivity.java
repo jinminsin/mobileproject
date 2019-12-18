@@ -1,10 +1,17 @@
 package com.example.healthyapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.app.ActivityManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private DBHelper helper;
@@ -33,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private int playtime;
     private Thread system;
 
+    private Intent background;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,87 +58,7 @@ public class MainActivity extends AppCompatActivity {
         expText = findViewById(R.id.textExp);
 
         initializeDB();
-
-        if (character.getCharacter() == 0) {
-            startActivityForResult(new Intent(MainActivity.this, FirstSetting.class), 0);
-        }else {
-            Play=true;
-            system = new Thread(new updateScreen());
-            system.setDaemon(true);
-            system.start();
-        }
-    }
-
-    protected void onResume() {
-        super.onResume();
-
-        if(character.getCharacter() != 0 && !system.isAlive()){
-            status.sendMessage(Message.obtain(status, 1, 0, 0));
-            Play=true;
-            system.start();
-        }
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 0) {//캐릭터 초기 설정
-            if (resultCode == RESULT_OK) {
-                status.sendMessage(Message.obtain(status, 1, 0, 0));
-                Play = true;
-                system = new Thread(new updateScreen());
-                system.setDaemon(true);
-                system.start();
-            }
-        }
-
-        if (requestCode == 2) {//앱 구동 설정
-            if (resultCode != RESULT_CANCELED) {
-                cursor = db.rawQuery("SELECT * FROM setting;", null);
-                cursor.moveToFirst();
-                playtime = cursor.getInt(cursor.getColumnIndex("appUpdateTime"));
-                cursor.close();
-
-                if (resultCode == 2)//기록 삭제
-                {
-                    character.setStep(0);
-                    character.setDistance(0);
-                    character.setCalories(0);
-                    helper.update(character);
-                }
-
-                if(resultCode == 3)//캐릭터 삭제
-                {
-                    Play = false;
-                    startActivityForResult(new Intent(MainActivity.this, FirstSetting.class), 0);
-                }
-            }
-        }
-    }
-
-    public void initializeDB()
-    {
-        helper = new DBHelper(this);
-        db = helper.getWritableDatabase();
-
-        cursor = db.rawQuery("SELECT * FROM status;", null);
-        cursor.moveToFirst();
-        character = new Character(cursor.getString(cursor.getColumnIndex("name")),
-                cursor.getFloat(cursor.getColumnIndex("height")),
-                cursor.getFloat(cursor.getColumnIndex("weight")),
-                cursor.getInt(cursor.getColumnIndex("character")),
-                cursor.getInt(cursor.getColumnIndex("level")),
-                cursor.getInt(cursor.getColumnIndex("currentExp")),
-                cursor.getFloat(cursor.getColumnIndex("negativeExp")),
-                cursor.getInt(cursor.getColumnIndex("calorie")),
-                cursor.getInt(cursor.getColumnIndex("dayStep")),
-                cursor.getFloat(cursor.getColumnIndex("dayDistance")));
-        cursor.close();
-
-        cursor = db.rawQuery("SELECT * FROM setting;", null);
-        cursor.moveToFirst();
-        playtime = cursor.getInt(cursor.getColumnIndex("appUpdateTime"));
-        cursor.close();
+        askForPermission(Manifest.permission.ACCESS_FINE_LOCATION,0);
 
         status = new Handler(new Handler.Callback(){
             @Override
@@ -163,15 +93,121 @@ public class MainActivity extends AppCompatActivity {
                 lvText.setText("Lv : " + character.getLevel().getLevel());
                 heightText.setText("키 : " + character.getHeight());
                 weightText.setText("몸무게 : " + character.getWeight());
-                calorieText.setText("소모 칼로리 : " + character.getCalories());
-                expText.setText("EXP : (" + character.getLevel().getCurrentExperience() + "/" + character.getLevel().getMaxExperience() + ")");
+                calorieText.setText("소모 칼로리 : " + String.format("%.2f",character.getCalories())+" kcal");
+                expText.setText("EXP : (" + String.format("%.2f",character.getLevel().getCurrentExperience()) + "/" + character.getLevel().getMaxExperience() + ")");
                 return true;
             }
         });
+
+        if (character.getCharacter() == 0) {
+            startActivityForResult(new Intent(MainActivity.this, FirstSetting.class), 0);
+        }else {
+            Play=true;
+            background = new Intent(this,BackGround.class);
+            startService(background);
+            system = new Thread(new updateScreen());
+            system.setDaemon(true);
+            system.start();
+        }
+    }
+
+    private void askForPermission (String permission, Integer requestCode) {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, permission)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, permission)) {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[] {permission}, requestCode);
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[] {permission}, requestCode);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "허가 승인", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "허가 거부", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    protected void onResume() {
+        super.onResume();
+
+        status.sendMessage(Message.obtain(status, 1, 0, 0));
+
+        if(character.getCharacter() != 0 && !system.isAlive()){
+            Play=true;
+            system.start();
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 0) {//캐릭터 초기 설정
+            if (resultCode == RESULT_OK) {
+                status.sendMessage(Message.obtain(status, 1, 0, 0));
+                background = new Intent(this,BackGround.class);
+                Play = true;
+                system = new Thread(new updateScreen());
+                system.setDaemon(true);
+                system.start();
+                startService(background);
+            }
+        }
+
+        if (requestCode == 1) {//앱 구동 설정
+            if (resultCode != RESULT_CANCELED) {
+                db = helper.getWritableDatabase();
+                cursor = db.rawQuery("SELECT * FROM setting;", null);
+                cursor.moveToFirst();
+                playtime = cursor.getInt(cursor.getColumnIndex("appUpdateTime"));
+                cursor.close();
+                db.close();
+
+                if(resultCode == 2)//캐릭터 삭제
+                {
+                    sendBroadcast(new Intent("resetModeOn"));
+                    stopService(background);
+                    startActivityForResult(new Intent(MainActivity.this, FirstSetting.class), 0);
+                }
+            }
+        }
+    }
+
+    public void initializeDB()
+    {
+        helper = new DBHelper(this);
+        db = helper.getWritableDatabase();
+
+        cursor = db.rawQuery("SELECT * FROM status;", null);
+        cursor.moveToFirst();
+        character = new Character(cursor.getString(cursor.getColumnIndex("name")),
+                cursor.getFloat(cursor.getColumnIndex("height")),
+                cursor.getFloat(cursor.getColumnIndex("weight")),
+                cursor.getInt(cursor.getColumnIndex("character")),
+                cursor.getInt(cursor.getColumnIndex("level")),
+                cursor.getFloat(cursor.getColumnIndex("currentExp")),
+                cursor.getFloat(cursor.getColumnIndex("negativeExp")),
+                cursor.getFloat(cursor.getColumnIndex("calorie")),
+                cursor.getInt(cursor.getColumnIndex("dayStep")),
+                cursor.getFloat(cursor.getColumnIndex("dayDistance")),
+                cursor.getLong(cursor.getColumnIndex("last_exercised")));
+        cursor.close();
+
+        cursor = db.rawQuery("SELECT * FROM setting;", null);
+        cursor.moveToFirst();
+        playtime = cursor.getInt(cursor.getColumnIndex("appUpdateTime"));
+        cursor.close();
+        db.close();
     }
 
     public void updateCharacter()
     {
+        db = helper.getWritableDatabase();
         cursor = db.rawQuery("SELECT * FROM status;", null);
         cursor.moveToFirst();
         character.setName(cursor.getString(cursor.getColumnIndex("name")));
@@ -179,12 +215,14 @@ public class MainActivity extends AppCompatActivity {
         character.setWeight(cursor.getFloat(cursor.getColumnIndex("weight")));
         character.setCharacter(cursor.getInt(cursor.getColumnIndex("character")));
         character.getLevel().setLevel(cursor.getInt(cursor.getColumnIndex("level")));
-        character.getLevel().setCurrentExperience(cursor.getInt(cursor.getColumnIndex("currentExp")));
+        character.getLevel().setCurrentExperience(cursor.getFloat(cursor.getColumnIndex("currentExp")));
         character.getLevel().setNegativeExperience(cursor.getFloat(cursor.getColumnIndex("negativeExp")));
-        character.setCalories(cursor.getInt(cursor.getColumnIndex("calorie")));
+        character.setCalories(cursor.getFloat(cursor.getColumnIndex("calorie")));
         character.setStep(cursor.getInt(cursor.getColumnIndex("dayStep")));
         character.setDistance(cursor.getFloat(cursor.getColumnIndex("dayDistance")));
+        character.getLevel().setLast_exercised(cursor.getLong(cursor.getColumnIndex("last_exercised")));
         cursor.close();
+        db.close();
     }
 
     public void ButtonClick(View view) {
@@ -202,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.buttonSetting:// 수면 시간 설정, 갱신 간격 설정, 리셋(?), 기록 삭제
                 option = new Intent(MainActivity.this,AppSetting.class);
-                startActivityForResult(option,2);
+                startActivityForResult(option,1);
                 break;
         }
     }
@@ -224,6 +262,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Play=false;
+        stopService(background);
         super.onDestroy();
     }
 }

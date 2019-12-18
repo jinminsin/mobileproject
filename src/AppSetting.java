@@ -23,7 +23,6 @@ public class AppSetting extends AppCompatActivity {
 
     private Cursor cursor;
 
-    private CheckBox recordReset;
     private CheckBox characterReset;
     private RadioButton setWidgetOn;
     private RadioButton setWidgetOff;
@@ -48,7 +47,6 @@ public class AppSetting extends AppCompatActivity {
 
         initializeDB();
 
-        recordReset = findViewById(R.id.checkRecordDelete);
         characterReset=findViewById(R.id.checkCharacterDelete);
         setWidget = findViewById(R.id.widgetSet);
         setWidgetOn = findViewById(R.id.widgetOn);
@@ -106,12 +104,9 @@ public class AppSetting extends AppCompatActivity {
                 setting.setSleepTime(sleepHour.getSelectedItemPosition()*60+sleepMinute.getSelectedItemPosition());
                 setting.setWakeTime(wakeHour.getSelectedItemPosition()*60+wakeMinute.getSelectedItemPosition());
                 helper.update(setting);
-                if(recordReset.isChecked()){
-                    setResult(2);
-                    finish();}
 
                 if(characterReset.isChecked()){
-                    setResult(3);
+                    setResult(2);
                     finish();}
 
                 setResult(1);
@@ -125,7 +120,7 @@ public class AppSetting extends AppCompatActivity {
                 {
                     setWidgetOff.setChecked(true);
                 }
-                recordReset.setChecked(false);
+
                 characterReset.setChecked(false);
                 updateTime.setSelection(setting.getAppUpdateTime()<=60?setting.getAppUpdateTime()/10 - 1:(setting.getAppUpdateTime()-60)/30 + 5);
                 sleepHour.setSelection(setting.getHours(setting.getSleepTime()));
@@ -153,6 +148,7 @@ public class AppSetting extends AppCompatActivity {
                 cursor.getInt(cursor.getColumnIndex("wakeTime")),
                 cursor.getInt(cursor.getColumnIndex("setWidget"))==1);
         cursor.close();
+        db.close();
     }
 
     @Override
