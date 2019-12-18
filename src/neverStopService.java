@@ -30,7 +30,7 @@ public class neverStopService extends BroadcastReceiver {
         }
         @Override
         public void run() {
-            context.startService(new Intent(context, BackGround.class));
+                context.startService(new Intent(context, BackGround.class));
         }
     }
 }

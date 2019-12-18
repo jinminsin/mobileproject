@@ -129,17 +129,14 @@ public class BackGround extends Service {
     }
 
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         cSensor.onDestroy(sensorManager);
         sendBroadcast(new Intent("neverDie"));
-        play=false;
-        try {
-            currentexp.join();
-            backsystem.join();
-        } catch (InterruptedException e) {
-            ;
-        }
+        play = false;
+
+        currentexp.interrupt();
+        backsystem.interrupt();
+
         super.onDestroy();
     }
 

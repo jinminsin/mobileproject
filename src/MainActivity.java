@@ -150,11 +150,11 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 0) {//캐릭터 초기 설정
             if (resultCode == RESULT_OK) {
                 status.sendMessage(Message.obtain(status, 1, 0, 0));
-                background = new Intent(this,BackGround.class);
                 Play = true;
                 system = new Thread(new updateScreen());
                 system.setDaemon(true);
                 system.start();
+                background = new Intent(this,BackGround.class);
                 startService(background);
             }
         }
@@ -171,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
                 if(resultCode == 2)//캐릭터 삭제
                 {
                     sendBroadcast(new Intent("resetModeOn"));
+                    Play=false;
+                    system.interrupt();
                     stopService(background);
                     startActivityForResult(new Intent(MainActivity.this, FirstSetting.class), 0);
                 }
