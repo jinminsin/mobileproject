@@ -82,7 +82,7 @@
    - 합치기 중
    
  - Notification.java
-   - 합치기 중
+   - 구현 중
    
 * * *
 
