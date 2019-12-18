@@ -202,30 +202,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="기록 초기화"
-                android:textColor="@color/design_default_color_primary" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="일일 기록을 초기화합니다. 일일 이동 거리 및 일일 이동 걸음 수만을 초기화합니다." />
-
-            <CheckBox
-                android:id="@+id/checkRecordDelete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="초기화하기"
-                android:layout_gravity="end"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginRight="20dp"
-                android:onClick="onClickbutton"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
                 android:text="캐릭터 초기화"
                 android:textColor="@color/design_default_color_primary" />
 
