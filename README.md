@@ -68,3 +68,22 @@
    - 대기 중
 - Widget.java
    - 대기 중
+   
+## 12/19 update
+ - MainActivity.java
+   - 불필요한 기록 삭제 기능 삭제
+   - 따라서 AppSetting의 레이아웃도 변경
+ 
+ - background.java
+   - 메인액티비티 terminated 이후 살아날 수 있도록 구성
+   - 센서 합치기 완료
+   
+ - Widget.java
+   - 합치기 중
+   
+ - Notification.java
+   - 합치기 중
+   
+* * *   
+###Parsing 부분 관련
+  - 시간 족
