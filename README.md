@@ -77,6 +77,11 @@
  - background.java
    - 메인액티비티 terminated 이후 살아날 수 있도록 구성
    - 센서 합치기 완료
+ 
+ - sensor.java
+   - 합치기 
+   - 속도 측정 면에서 튀는 계산값 일부 수정
+   - 만보계 추가
    
  - Widget.java
    - 합치기 중
