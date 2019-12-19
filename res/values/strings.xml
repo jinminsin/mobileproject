@@ -1,0 +1,10 @@
+<resources>
+    <string name="name">걷기 앱</string>
+    <string name="GoalTime">목표 달성을 몇 시 몇 분까지 시행할 지를 설정할 수 있습니다. 설정한 시간을 넘기면 실패 알림이 나갑니다.</string>
+    <string name="DistanceGoalNotice">목표로 설정한 이동 거리를 달성하였을 경우 알림을 보낼지 안 보낼지 결정할 수 있습니다.</string>
+    <string name="StepGoal">하루에 목표하고 싶은 걸음 수를 설정할 수 있습니다. 1~99999까지 설정 가능합니다.</string>
+    <string name="StepGoalNotice">목표로 설정한 걸음 수를 달성하였을 경우 알림을 보낼지 안 보낼지 결정할 수 있습니다.</string>
+    <string name="DistanceGoal">하루에 목표하고 싶은 이동 거리를 설정할 수 있습니다. 1~99까지 설정 가능합니다.</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+</resources>

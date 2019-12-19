@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="어서오세요, HUMAN님!"
+                android:textColor="@android:color/holo_purple"
+                android:textSize="30dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5dp"
+                android:background="@android:color/holo_blue_bright" />
+
+            <ImageView
+                android:id="@+id/characterImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:srcCompat="@tools:sample/avatars[0]"
+                android:adjustViewBounds="true"/>
+
+            <TextView
+                android:id="@+id/textHeight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="키 : 0"
+                android:textColor="@android:color/black"
+                android:layout_margin="5dp" />
+
+            <TextView
+                android:id="@+id/textWeight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="몸무게 : 0"
+                android:textColor="@android:color/black"
+                android:layout_margin="5dp" />
+
+            <TextView
+                android:id="@+id/textLv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="레벨 : 0"
+                android:textColor="@android:color/black"
+                android:layout_margin="5dp" />
+
+            <TextView
+                android:id="@+id/textCalorie"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="칼로리 : 0"
+                android:textColor="@android:color/black"
+                android:layout_margin="5dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textExp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="EXP : (0/0)"
+                    android:textColor="@android:color/black"
+                    android:layout_margin="5dp" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5dp"
+                android:background="@android:color/holo_blue_bright" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="5dp"
+                android:layout_gravity="end"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/buttonDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/holo_blue_bright"
+                    android:onClick="ButtonClick"
+                    android:text="자세히\n보기" />
+
+                <Button
+                    android:id="@+id/buttonNotice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/holo_blue_bright"
+                    android:onClick="ButtonClick"
+                    android:text="목표 알림\n설정" />
+
+                <Button
+                    android:id="@+id/buttonSetting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/holo_blue_bright"
+                    android:onClick="ButtonClick"
+                    android:text="앱 구동\n설정" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
