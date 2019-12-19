@@ -176,7 +176,6 @@ public class MainActivity extends AppCompatActivity {
 
                 if(resultCode == 2)//캐릭터 삭제
                 {
-                    sendBroadcast(new Intent("resetModeOn"));
                     Play=false;
                     system.interrupt();
                     stopService(background);
@@ -185,11 +184,15 @@ public class MainActivity extends AppCompatActivity {
 
                 if(resultCode == 3)//목표 변경
                 {
-                    sendBroadcast(new Intent("resetModeOn"));
                     Play=false;
                     system.interrupt();
                     stopService(background);
                     status.sendMessage(Message.obtain(status, 1, 0, 0));
+
+                    Play = true;
+                    system = new Thread(new updateScreen());
+                    system.setDaemon(true);
+                    system.start();
                     background = new Intent(this,BackGround.class);
                     startService(background);
                 }
@@ -283,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         Play=false;
         stopService(background);
+        sendBroadcast(new Intent("neverDie"));
         super.onDestroy();
     }
 }
