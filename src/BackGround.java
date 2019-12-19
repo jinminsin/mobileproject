@@ -47,7 +47,6 @@ public class BackGround extends Service {
     public int onStartCommand(Intent intent, int flags, int startid)
     {
         super.onStartCommand(intent, flags, startid);
-        sendBroadcast(new Intent("resetModeOff"));
         initializeDB();
         gps=new GPS();
         sensorManager=(SensorManager)getSystemService(Activity.SENSOR_SERVICE);
@@ -182,12 +181,9 @@ public class BackGround extends Service {
     @Override
     public void onDestroy() {
         cSensor.onDestroy(sensorManager);
-        sendBroadcast(new Intent("neverDie"));
         play = false;
-
         currentexp.interrupt();
         backsystem.interrupt();
-
         super.onDestroy();
     }
 
