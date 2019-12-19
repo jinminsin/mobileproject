@@ -1,6 +1,9 @@
 package com.example.healthyapp;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +19,8 @@ import android.util.Log;
 public class BackGround extends Service {
     private final long oneDayMilies = 24*60*60*1000;//하루 시간
     private boolean play = true;
+    private boolean noticeStep = true;
+    private boolean noticeDistance = true;
     private DBHelper helper;
     private SQLiteDatabase db;
 
@@ -26,6 +31,8 @@ public class BackGround extends Service {
     private Handler update;
 
     private SensorManager sensorManager;
+    private NotificationManager noticeManager;
+    private Notification notice;
     private sensor cSensor;//calculate sensor
     private GPS gps;// Find Accurancy between GPS and sensor
 
@@ -44,14 +51,52 @@ public class BackGround extends Service {
         initializeDB();
         gps=new GPS();
         sensorManager=(SensorManager)getSystemService(Activity.SENSOR_SERVICE);
+        noticeManager=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         cSensor=new sensor(sensorManager);
         cSensor.onResume(sensorManager);
         gps.initGPS(getApplicationContext());
 
         update = new Handler(new Handler.Callback(){
-        @Override
+            Intent intent;
+            PendingIntent content;
+            @Override
         public synchronized boolean handleMessage(Message msg) {
-            helper.update(character);
+            switch(msg.what) {
+                case 1://캐릭터 수정
+                helper.update(character);
+                break;
+                case 2://목표달성 - 걸음
+                    intent = new Intent(getApplicationContext(),MainActivity.class);
+                    content = PendingIntent.getActivity(getApplicationContext()
+                            , 0
+                            , intent
+                            , 0);
+                    notice = new Notification.Builder(getApplicationContext())
+                            .setContentTitle("목표 달성 완료!")
+                            .setContentText("목표 걸음 수를 달성하셨어요")
+                            .setSmallIcon(R.drawable.a1)
+                            .setContentIntent(content)
+                            .setWhen(System.currentTimeMillis())
+                            .build();
+
+                    noticeManager.notify(1, notice);
+                    break;
+                case 3://목표달성 - 걸음
+                    intent = new Intent(getApplicationContext(),MainActivity.class);
+                    content = PendingIntent.getActivity(getApplicationContext()
+                            , 0
+                            , intent
+                            , 0);
+                    notice = new Notification.Builder(getApplicationContext())
+                            .setContentTitle("목표 달성 완료!")
+                            .setContentText("목표 이동 거리를 달성하셨어요")
+                            .setSmallIcon(R.drawable.a2)
+                            .setContentIntent(content)
+                            .setWhen(System.currentTimeMillis())
+                            .build();
+                    noticeManager.notify(2, notice);
+                    break;
+            }
             return true;
         }
     });
@@ -71,20 +116,19 @@ public class BackGround extends Service {
 
     public boolean checkSleepMode()
     {
-        long current_time = System.currentTimeMillis() % oneDayMilies;
-        long sleep_time = setting.getSleepTime()*1000;
-        long wake_time = setting.getWakeTime()*1000;
+        long current_time = (System.currentTimeMillis()%oneDayMilies)/60000+540;//한국 표준으로 우선 고정
+        long sleep_time = setting.getSleepTime();
+        long wake_time = setting.getWakeTime();
 
-        if(sleep_time < wake_time && current_time > sleep_time && current_time < wake_time)// 수면시간 < 기상시간
-            return true;
+        wake_time = wake_time - sleep_time < 0 ? oneDayMilies/60000 + (wake_time - sleep_time): wake_time - sleep_time;
+        current_time = current_time - sleep_time < 0 ? oneDayMilies/60000 + (current_time - sleep_time): current_time - sleep_time;
+        sleep_time = 0;
+        //수면 시간을 0으로 하는 시간 간격 보정
 
-        if(sleep_time > wake_time && current_time + oneDayMilies > sleep_time && current_time < wake_time)// 수면시간 > 기상시간(수면 도중 00시를 넘을 때) 현재시간이 00시 이후일 때
-            return true;
+        if(sleep_time < current_time && current_time < wake_time) return false;
 
-        if(sleep_time > wake_time && current_time > sleep_time && current_time < wake_time + oneDayMilies)// 수면시간 > 기상시간(수면 도중 00시를 넘을 때) 현재시간이 00시 이전일 때
-            return true;
 
-        return false;
+        return true;
     }
 
     @Override
@@ -109,6 +153,13 @@ public class BackGround extends Service {
                         cSensor.setStep(0);//센서에 기록된 걸음 수는 초기화함.
                     } else
                         count++;//이동하지 않을 시에 증가
+
+                    if(character.getStep() > setting.getStepGoal() && noticeStep)//목표달성
+                    {
+                        noticeStep = false;
+                        update.sendMessage(Message.obtain(update, 2, 0, 0));
+                    }
+
 
                     if (count % 1800 == 0)// 30분 미 이동시
                     {
@@ -183,10 +234,18 @@ public class BackGround extends Service {
                     if(voting() > 2 && voting() < 28)
                     character.setDistance(character.getDistance() + (voting() / 3600));//거리 증가
 
+                    if(character.getDistance() > setting.getDistanceGoal() && noticeDistance)//목표달성
+                    {
+                        noticeDistance=false;
+                        update.sendMessage(Message.obtain(update, 3, 0, 0));
+                    }
+
+
                     if (count == 60)//1분이 지날 시
                     {
                         //칼로리 경험치 합산
                         character.getLevel().expAcquisition((character.getCalories() - prekcal) / 10);
+                        if(character.getLevel().getMaxExperience() < character.getLevel().getCurrentExperience()) character.getLevel().levelUp();
                         prekcal = character.getCalories();
                         count = 0;
                     }
@@ -198,6 +257,8 @@ public class BackGround extends Service {
                     character.setDistance(0);
                     character.setCalories(0);
                     character.setStep(0);
+                    noticeDistance=true;
+                    noticeStep=true;
                 }
 
                 try {
@@ -239,8 +300,7 @@ public class BackGround extends Service {
                 cursor.getInt(cursor.getColumnIndex("goalTime")),
                 cursor.getInt(cursor.getColumnIndex("appUpdateTime")),
                 cursor.getInt(cursor.getColumnIndex("sleepTime")),
-                cursor.getInt(cursor.getColumnIndex("wakeTime")),
-                cursor.getInt(cursor.getColumnIndex("setWidget")) == 1);
+                cursor.getInt(cursor.getColumnIndex("wakeTime")));
         cursor.close();
         db.close();
     }

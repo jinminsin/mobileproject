@@ -156,8 +156,7 @@ public class NoticeGoal extends AppCompatActivity {
                 cursor.getInt(cursor.getColumnIndex("goalTime")),
                 cursor.getInt(cursor.getColumnIndex("appUpdateTime")),
                 cursor.getInt(cursor.getColumnIndex("sleepTime")),
-                cursor.getInt(cursor.getColumnIndex("wakeTime")),
-                cursor.getInt(cursor.getColumnIndex("setWidget"))==1);
+                cursor.getInt(cursor.getColumnIndex("wakeTime")));
         cursor.close();
     }
 }

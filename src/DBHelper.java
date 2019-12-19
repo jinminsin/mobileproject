@@ -67,7 +67,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("UPDATE setting SET appUpdateTime="+setting.getAppUpdateTime()+" WHERE _id = 1;");
         db.execSQL("UPDATE setting SET sleepTime="+setting.getSleepTime()+" WHERE _id = 1;");
         db.execSQL("UPDATE setting SET wakeTime="+setting.getWakeTime()+" WHERE _id = 1;");
-        db.execSQL("UPDATE setting SET setWidget="+((setting.isSetWidget() == true) ? 1 : 0)+" WHERE _id = 1;");
         db.close();
     }
 }

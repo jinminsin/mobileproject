@@ -48,22 +48,11 @@ public class AppSetting extends AppCompatActivity {
         initializeDB();
 
         characterReset=findViewById(R.id.checkCharacterDelete);
-        setWidget = findViewById(R.id.widgetSet);
-        setWidgetOn = findViewById(R.id.widgetOn);
-        setWidgetOff = findViewById(R.id.widgetOff);
         updateTime = findViewById(R.id.update);
         sleepHour=findViewById(R.id.sleepHour);
         sleepMinute=findViewById(R.id.sleepMinute);
         wakeHour=findViewById(R.id.wakeHour);
         wakeMinute=findViewById(R.id.wakeMinute);
-
-        if(setting.isSetWidget())
-        {
-            setWidgetOn.setChecked(true);
-        }else
-        {
-            setWidgetOff.setChecked(true);
-        }
 
         time=new ArrayList<>();
         for(int i=10,digit=10;i<=300;i+=digit) {
@@ -103,23 +92,17 @@ public class AppSetting extends AppCompatActivity {
                 setting.setAppUpdateTime(Integer.parseInt(updateTime.getSelectedItem().toString().trim()));
                 setting.setSleepTime(sleepHour.getSelectedItemPosition()*60+sleepMinute.getSelectedItemPosition());
                 setting.setWakeTime(wakeHour.getSelectedItemPosition()*60+wakeMinute.getSelectedItemPosition());
-                helper.update(setting);
 
                 if(characterReset.isChecked()){
+                    helper.update(setting);
                     setResult(2);
                     finish();}
 
+                helper.update(setting);
                 setResult(1);
                 finish();
                 break;
             case R.id.resetbutton:
-                if(setting.isSetWidget())
-                {
-                    setWidgetOn.setChecked(true);
-                }else
-                {
-                    setWidgetOff.setChecked(true);
-                }
 
                 characterReset.setChecked(false);
                 updateTime.setSelection(setting.getAppUpdateTime()<=60?setting.getAppUpdateTime()/10 - 1:(setting.getAppUpdateTime()-60)/30 + 5);
@@ -145,8 +128,7 @@ public class AppSetting extends AppCompatActivity {
                 cursor.getInt(cursor.getColumnIndex("goalTime")),
                 cursor.getInt(cursor.getColumnIndex("appUpdateTime")),
                 cursor.getInt(cursor.getColumnIndex("sleepTime")),
-                cursor.getInt(cursor.getColumnIndex("wakeTime")),
-                cursor.getInt(cursor.getColumnIndex("setWidget"))==1);
+                cursor.getInt(cursor.getColumnIndex("wakeTime")));
         cursor.close();
         db.close();
     }

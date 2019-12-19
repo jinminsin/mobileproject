@@ -18,6 +18,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,11 +38,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView weightText;
     private TextView calorieText;
     private TextView expText;
+    private ProgressBar progressbar;
     private boolean Play;
     private int playtime;
     private Thread system;
 
     private Intent background;
+    private Intent setWidget;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         weightText = findViewById(R.id.textWeight);
         calorieText = findViewById(R.id.textCalorie);
         expText = findViewById(R.id.textExp);
+        progressbar=findViewById(R.id.progressBar);
 
         initializeDB();
         askForPermission(Manifest.permission.ACCESS_FINE_LOCATION,0);
@@ -95,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 weightText.setText("몸무게 : " + character.getWeight());
                 calorieText.setText("소모 칼로리 : " + String.format("%.2f",character.getCalories())+" kcal");
                 expText.setText("EXP : (" + String.format("%.2f",character.getLevel().getCurrentExperience()) + "/" + character.getLevel().getMaxExperience() + ")");
+                progressbar.setMax(character.getLevel().getMaxExperience());
+                progressbar.setProgress((int)character.getLevel().getCurrentExperience());
                 return true;
             }
         });
@@ -176,6 +182,18 @@ public class MainActivity extends AppCompatActivity {
                     stopService(background);
                     startActivityForResult(new Intent(MainActivity.this, FirstSetting.class), 0);
                 }
+
+                if(resultCode == 3)//목표 변경
+                {
+                    sendBroadcast(new Intent("resetModeOn"));
+                    Play=false;
+                    system.interrupt();
+                    stopService(background);
+                    status.sendMessage(Message.obtain(status, 1, 0, 0));
+                    background = new Intent(this,BackGround.class);
+                    startService(background);
+                }
+
             }
         }
     }
@@ -232,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
         switch (view.getId()) {
             case R.id.buttonNotice://일일 목표 설정 및 알림
                 option = new Intent(MainActivity.this,NoticeGoal.class);
-                startActivity(option);
+                startActivityForResult(option,1);
                 break;
             case R.id.buttonDetail://자세히 보기 ( 오늘 하루 걸은 거리 및 걸음 횟수 등 )
                 option = new Intent(MainActivity.this,DetailScreen.class);
@@ -240,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
                 system.interrupt();
                 startActivity(option);
                 break;
-            case R.id.buttonSetting:// 수면 시간 설정, 갱신 간격 설정, 리셋(?), 기록 삭제
+            case R.id.buttonSetting:// 수면 시간 설정, 갱신 간격 설정, 리셋(?)
                 option = new Intent(MainActivity.this,AppSetting.class);
                 startActivityForResult(option,1);
                 break;

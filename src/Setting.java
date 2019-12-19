@@ -11,13 +11,12 @@ public class Setting {
     private int appUpdateTime;
     private int sleepTime;
     private int wakeTime;
-    private boolean setWidget;
     //앱 구동 설정
 
     public static int getHours(int time) { return time / 60; }
     public static int getMinutes(int time) { return time % 60; }
 
-    public Setting(boolean stepNotice,boolean distanceNotice,int stepGoal,int distanceGoal,int goalTime, int appUpdateTime,int sleepTime,int wakeTime,boolean setWidget)
+    public Setting(boolean stepNotice,boolean distanceNotice,int stepGoal,int distanceGoal,int goalTime, int appUpdateTime,int sleepTime,int wakeTime)
     {
         this.stepNotice = stepNotice;
         this.distanceNotice = distanceNotice;
@@ -27,7 +26,6 @@ public class Setting {
         this.appUpdateTime = appUpdateTime;
         this.sleepTime = sleepTime;
         this.wakeTime = wakeTime;
-        this.setWidget = setWidget;
     }
 
     public int getAppUpdateTime() {
@@ -52,14 +50,6 @@ public class Setting {
 
     public void setWakeTime(int wakeTime) {
         this.wakeTime = wakeTime;
-    }
-
-    public boolean isSetWidget() {
-        return setWidget;
-    }
-
-    public void setSetWidget(boolean setWidget) {
-        this.setWidget = setWidget;
     }
 
     public boolean isStepNotice() {
