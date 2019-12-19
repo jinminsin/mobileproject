@@ -14,9 +14,9 @@ import androidx.core.app.ActivityCompat;
 public class GPS {
 
     private static Location prevLocation = new Location("starting_point");
-    public static float distanceGPS = 0;
+    public float distanceGPS = 0;
 
-    public static void initGPS(Context context) {
+    public void initGPS(Context context) {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
             @Override

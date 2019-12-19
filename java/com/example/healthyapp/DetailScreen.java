@@ -41,7 +41,6 @@ public class DetailScreen extends AppCompatActivity {
 
     private boolean Play=true;
     private Thread system;
-    private int appUpdateTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

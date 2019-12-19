@@ -8,14 +8,14 @@ import android.hardware.SensorManager;
 import android.util.Log;
 
 public class sensor implements SensorEventListener {
-    private static final int AVG_NUM = 5;
+    private final int AVG_NUM = 5;
     private float[] speed = {0, 0, 0};
     private float[] tickX = new float[AVG_NUM];
     private float[] tickY = new float[AVG_NUM];
     private float[] tickZ = new float[AVG_NUM];
 
     public boolean turning = false;
-    private static final float TURNING_SENSITIVITY = 1.5f;
+    private final float TURNING_SENSITIVITY = 1.5f;
 
     private final Sensor mLinearAcc;
     private final Sensor mGyroscope;

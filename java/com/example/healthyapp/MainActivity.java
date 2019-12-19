@@ -11,11 +11,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -42,9 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean Play;
     private int playtime;
     private Thread system;
-
     private Intent background;
-    private Intent setWidget;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +60,14 @@ public class MainActivity extends AppCompatActivity {
         initializeDB();
         askForPermission(Manifest.permission.ACCESS_FINE_LOCATION,0);
 
+        system = new Thread(new updateScreen());
+        system.setDaemon(true);
+
         status = new Handler(new Handler.Callback(){
             @Override
             public boolean handleMessage(Message msg) {
                 updateCharacter();
+
                 if(character.getCharacter() == 1)
                 {
                     if(character.getLevel().getLevel() <= 5)
@@ -84,7 +84,8 @@ public class MainActivity extends AppCompatActivity {
                         characterImage.setImageResource(R.drawable.b2);
                     else
                         characterImage.setImageResource(R.drawable.b3);
-                }else
+                }
+                else
                 {
                     if(character.getLevel().getLevel() <= 5)
                         characterImage.setImageResource(R.drawable.c1);
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     else
                         characterImage.setImageResource(R.drawable.c3);
                 }
+
                 nameText.setText("어서오세요! "+character.getName()+" 님!");
                 lvText.setText("Lv : " + character.getLevel().getLevel());
                 heightText.setText("키 : " + character.getHeight());
@@ -109,8 +111,6 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(new Intent(MainActivity.this, FirstSetting.class), 0);
         }else {
             Play=true;
-            system = new Thread(new updateScreen());
-            system.setDaemon(true);
             system.start();
         }
     }
@@ -139,10 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-
         status.sendMessage(Message.obtain(status, 1, 0, 0));
-
-        if(character.getCharacter() != 0 && !system.isAlive()){
+        if(system.isAlive() && character.getCharacter() != 0) {
             Play=true;
             system.start();
         }
@@ -155,8 +153,6 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 status.sendMessage(Message.obtain(status, 1, 0, 0));
                 Play = true;
-                system = new Thread(new updateScreen());
-                system.setDaemon(true);
                 system.start();
                 background = new Intent(this,BackGround.class);
                 startService(background);
@@ -188,8 +184,6 @@ public class MainActivity extends AppCompatActivity {
                     status.sendMessage(Message.obtain(status, 1, 0, 0));
 
                     Play = true;
-                    system = new Thread(new updateScreen());
-                    system.setDaemon(true);
                     system.start();
                     background = new Intent(this,BackGround.class);
                     startService(background);
@@ -237,11 +231,7 @@ public class MainActivity extends AppCompatActivity {
         character.setCharacter(cursor.getInt(cursor.getColumnIndex("character")));
         character.getLevel().setLevel(cursor.getInt(cursor.getColumnIndex("level")));
         character.getLevel().setCurrentExperience(cursor.getFloat(cursor.getColumnIndex("currentExp")));
-        character.getLevel().setNegativeExperience(cursor.getFloat(cursor.getColumnIndex("negativeExp")));
         character.setCalories(cursor.getFloat(cursor.getColumnIndex("calorie")));
-        character.setStep(cursor.getInt(cursor.getColumnIndex("dayStep")));
-        character.setDistance(cursor.getFloat(cursor.getColumnIndex("dayDistance")));
-        character.getLevel().setLast_exercised(cursor.getLong(cursor.getColumnIndex("last_exercised")));
         cursor.close();
         db.close();
     }
@@ -272,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
             while (Play) {
                 try {
                     status.sendMessage(Message.obtain(status,1,0,0));
-                    Thread.sleep(playtime*100);
+                    Thread.sleep(playtime*1000);
                 } catch (InterruptedException e) {
                     ;
                 }

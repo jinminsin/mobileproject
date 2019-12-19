@@ -13,8 +13,8 @@ public class Setting {
     private int wakeTime;
     //앱 구동 설정
 
-    public static int getHours(int time) { return time / 60; }
-    public static int getMinutes(int time) { return time % 60; }
+    public int getHours(int time) { return time / 60; }
+    public int getMinutes(int time) { return time % 60; }
 
     public Setting(boolean stepNotice,boolean distanceNotice,int stepGoal,int distanceGoal,int goalTime, int appUpdateTime,int sleepTime,int wakeTime)
     {
