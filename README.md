@@ -2,6 +2,6 @@
 
 - 11/15~20 제안서 작성
 
-## 12/19 11:50
+## 12/19 13:02
  - project complete
  - commit master
