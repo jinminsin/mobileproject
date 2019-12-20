@@ -31,6 +31,7 @@ public class FirstSetting extends AppCompatActivity {
         setContentView(R.layout.activity_first_setting);
 
         helper = new DBHelper(this);
+        db=helper.getWritableDatabase();
         character = new Character("human",0,0,0,0,0,0,0,0,0,0);//초기화
 
         nameText = findViewById(R.id.editName);
