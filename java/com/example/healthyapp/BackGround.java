@@ -207,7 +207,7 @@ public class BackGround extends Service {
         private float prekcal = 0;//이전 칼로리
         private float speed = 0;
 
-        public void run() {
+         public void run() {
             while (play) {
                 if (checkSleepMode()) {
                     count++;//초당 카운트
@@ -263,24 +263,24 @@ public class BackGround extends Service {
                         prekcal = character.getCalories();
                         count = 0;
                     }
-                }
 
-                if((System.currentTimeMillis() % oneDayMilies)/60000 + 540 > setting.getGoalTime() && noticeGoal)//
-                {
-                    noticeGoal = false;
-                    update.sendMessage(Message.obtain(update, 4, 0, 0));
-                }
+                    if ((System.currentTimeMillis() % oneDayMilies) / 60000 + 540 > setting.getGoalTime() && noticeGoal && noticeDistance && noticeStep)//
+                    {
+                        noticeGoal = false;
+                        update.sendMessage(Message.obtain(update, 4, 0, 0));
+                    }
 
 
-                if (System.currentTimeMillis() % oneDayMilies < 1000)//일일 기록 초기화
-                {
-                    prekcal = 0;
-                    character.setDistance(0);
-                    character.setCalories(0);
-                    character.setStep(0);
-                    noticeDistance = true;
-                    noticeStep = true;
-                    noticeGoal = true;
+                    if (System.currentTimeMillis() % oneDayMilies < 1000)//일일 기록 초기화
+                    {
+                        prekcal = 0;
+                        character.setDistance(0);
+                        character.setCalories(0);
+                        character.setStep(0);
+                        noticeDistance = true;
+                        noticeStep = true;
+                        noticeGoal = true;
+                    }
                 }
 
                 try {
