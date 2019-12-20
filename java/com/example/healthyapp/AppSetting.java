@@ -94,16 +94,15 @@ public class AppSetting extends AppCompatActivity {
                 setting.setWakeTime(wakeHour.getSelectedItemPosition()*60+wakeMinute.getSelectedItemPosition());
 
                 if(characterReset.isChecked()){
-                    helper.update(setting);
+                    helper.update(setting,db);
                     setResult(2);
                     finish();}
 
-                helper.update(setting);
+                helper.update(setting,db);
                 setResult(1);
                 finish();
                 break;
             case R.id.resetbutton:
-
                 characterReset.setChecked(false);
                 updateTime.setSelection(setting.getAppUpdateTime()<=60?setting.getAppUpdateTime()/10 - 1:(setting.getAppUpdateTime()-60)/30 + 5);
                 sleepHour.setSelection(setting.getHours(setting.getSleepTime()));
@@ -130,7 +129,6 @@ public class AppSetting extends AppCompatActivity {
                 cursor.getInt(cursor.getColumnIndex("sleepTime")),
                 cursor.getInt(cursor.getColumnIndex("wakeTime")));
         cursor.close();
-        db.close();
     }
 
     @Override

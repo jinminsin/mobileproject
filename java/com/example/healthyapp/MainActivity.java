@@ -65,43 +65,57 @@ public class MainActivity extends AppCompatActivity {
         status = new Handler(new Handler.Callback(){
             @Override
             public boolean handleMessage(Message msg) {
-                updateCharacter();
+                switch (msg.what) {
+                    case 1:
+                        cursor = db.rawQuery("SELECT * FROM status;", null);
+                        cursor.moveToFirst();
+                        character.getLevel().setLevel(cursor.getInt(cursor.getColumnIndex("level")));
+                        character.getLevel().setCurrentExperience(cursor.getFloat(cursor.getColumnIndex("currentExp")));
+                        character.setCalories(cursor.getFloat(cursor.getColumnIndex("calorie")));
+                        cursor.close();
 
-                if(character.getCharacter() == 1)
-                {
-                    if(character.getLevel().getLevel() <= 5)
-                        characterImage.setImageResource(R.drawable.a1);
-                    else if(character.getLevel().getLevel() <= 10)
-                        characterImage.setImageResource(R.drawable.a2);
-                    else
-                        characterImage.setImageResource(R.drawable.a3);
-                }else if(character.getCharacter() == 2)
-                {
-                    if(character.getLevel().getLevel() <= 5)
-                        characterImage.setImageResource(R.drawable.b1);
-                    else if(character.getLevel().getLevel() <= 10)
-                        characterImage.setImageResource(R.drawable.b2);
-                    else
-                        characterImage.setImageResource(R.drawable.b3);
-                }
-                else
-                {
-                    if(character.getLevel().getLevel() <= 5)
-                        characterImage.setImageResource(R.drawable.c1);
-                    else if(character.getLevel().getLevel() <= 10)
-                        characterImage.setImageResource(R.drawable.c2);
-                    else
-                        characterImage.setImageResource(R.drawable.c3);
-                }
+                        lvText.setText("Lv : " + character.getLevel().getLevel());
+                        calorieText.setText("소모 칼로리 : " + String.format("%.2f", character.getCalories()) + " kcal");
+                        expText.setText("EXP : (" + String.format("%.2f", character.getLevel().getCurrentExperience()) + "/" + character.getLevel().getMaxExperience() + ")");
+                        progressbar.setMax(character.getLevel().getMaxExperience());
+                        progressbar.setProgress((int) character.getLevel().getCurrentExperience());
+                        break;
+                    case 2://리셋일 경우
+                        updateCharacter();
 
-                nameText.setText("어서오세요! "+character.getName()+" 님!");
-                lvText.setText("Lv : " + character.getLevel().getLevel());
-                heightText.setText("키 : " + character.getHeight());
-                weightText.setText("몸무게 : " + character.getWeight());
-                calorieText.setText("소모 칼로리 : " + String.format("%.2f",character.getCalories())+" kcal");
-                expText.setText("EXP : (" + String.format("%.2f",character.getLevel().getCurrentExperience()) + "/" + character.getLevel().getMaxExperience() + ")");
-                progressbar.setMax(character.getLevel().getMaxExperience());
-                progressbar.setProgress((int)character.getLevel().getCurrentExperience());
+                        if (character.getCharacter() == 1) {
+                            if (character.getLevel().getLevel() <= 5)
+                                characterImage.setImageResource(R.drawable.a1);
+                            else if (character.getLevel().getLevel() <= 10)
+                                characterImage.setImageResource(R.drawable.a2);
+                            else
+                                characterImage.setImageResource(R.drawable.a3);
+                        } else if (character.getCharacter() == 2) {
+                            if (character.getLevel().getLevel() <= 5)
+                                characterImage.setImageResource(R.drawable.b1);
+                            else if (character.getLevel().getLevel() <= 10)
+                                characterImage.setImageResource(R.drawable.b2);
+                            else
+                                characterImage.setImageResource(R.drawable.b3);
+                        } else {
+                            if (character.getLevel().getLevel() <= 5)
+                                characterImage.setImageResource(R.drawable.c1);
+                            else if (character.getLevel().getLevel() <= 10)
+                                characterImage.setImageResource(R.drawable.c2);
+                            else
+                                characterImage.setImageResource(R.drawable.c3);
+                        }
+
+                        nameText.setText("어서오세요! " + character.getName() + " 님!");
+                        lvText.setText("Lv : " + character.getLevel().getLevel());
+                        heightText.setText("키 : " + character.getHeight());
+                        weightText.setText("몸무게 : " + character.getWeight());
+                        calorieText.setText("소모 칼로리 : " + String.format("%.2f", character.getCalories()) + " kcal");
+                        expText.setText("EXP : (" + String.format("%.2f", character.getLevel().getCurrentExperience()) + "/" + character.getLevel().getMaxExperience() + ")");
+                        progressbar.setMax(character.getLevel().getMaxExperience());
+                        progressbar.setProgress((int) character.getLevel().getCurrentExperience());
+                        break;
+                }
                 return true;
             }
         });
@@ -138,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-        status.sendMessage(Message.obtain(status, 1, 0, 0));
+        status.sendMessage(Message.obtain(status, 2, 0, 0));
         if(system.isAlive() && character.getCharacter() != 0) {
             Play=true;
             system.start();
@@ -150,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 0) {//캐릭터 초기 설정
             if (resultCode == RESULT_OK) {
-                status.sendMessage(Message.obtain(status, 1, 0, 0));
+                status.sendMessage(Message.obtain(status, 2, 0, 0));
                 Play = true;
                 system.start();
                 background = new Intent(this,BackGround.class);
@@ -161,12 +175,10 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1) {//앱 구동 설정
             if (resultCode != RESULT_CANCELED) {
                 stopService(background);
-                db = helper.getWritableDatabase();
                 cursor = db.rawQuery("SELECT * FROM setting;", null);
                 cursor.moveToFirst();
                 playtime = cursor.getInt(cursor.getColumnIndex("appUpdateTime"));
                 cursor.close();
-                db.close();
 
                 if(resultCode == 1)//시간 변경
                 {
@@ -220,12 +232,10 @@ public class MainActivity extends AppCompatActivity {
         cursor.moveToFirst();
         playtime = cursor.getInt(cursor.getColumnIndex("appUpdateTime"));
         cursor.close();
-        db.close();
     }
 
     public void updateCharacter()
     {
-        db = helper.getWritableDatabase();
         cursor = db.rawQuery("SELECT * FROM status;", null);
         cursor.moveToFirst();
         character.setName(cursor.getString(cursor.getColumnIndex("name")));
@@ -236,7 +246,6 @@ public class MainActivity extends AppCompatActivity {
         character.getLevel().setCurrentExperience(cursor.getFloat(cursor.getColumnIndex("currentExp")));
         character.setCalories(cursor.getFloat(cursor.getColumnIndex("calorie")));
         cursor.close();
-        db.close();
     }
 
     public void ButtonClick(View view) {

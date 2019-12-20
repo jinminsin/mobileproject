@@ -116,7 +116,7 @@ public class NoticeGoal extends AppCompatActivity {
                         setting.setDistanceNotice(false);
                 }
                 setting.setGoalTime(goalHour.getSelectedItemPosition()*60+goalMinute.getSelectedItemPosition());
-                helper.update(setting);
+                helper.update(setting, db);
                 finish();
                 break;
             case R.id.resetbutton:

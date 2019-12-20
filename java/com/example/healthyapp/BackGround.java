@@ -60,7 +60,7 @@ public class BackGround extends Service {
         public synchronized boolean handleMessage(Message msg) {
             switch(msg.what) {
                 case 1://캐릭터 수정
-                helper.update(character);
+                helper.update(character, db);
                 break;
                 case 2://목표달성 - 걸음
                     intent = new Intent(getApplicationContext(),MainActivity.class);
@@ -298,7 +298,6 @@ public class BackGround extends Service {
                 cursor.getInt(cursor.getColumnIndex("sleepTime")),
                 cursor.getInt(cursor.getColumnIndex("wakeTime")));
         cursor.close();
-        db.close();
     }
 
     public float voting() {

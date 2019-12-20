@@ -69,7 +69,7 @@ public class FirstSetting extends AppCompatActivity {
                         break;
                 }
                 character.getLevel().setLevel(1);
-                helper.update(character);
+                helper.update(character, db);
                 setResult(RESULT_OK);
                 finish();
                 break;

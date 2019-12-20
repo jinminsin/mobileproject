@@ -37,9 +37,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public void update(Character character) {
+    public void update(Character character, SQLiteDatabase db) {
         // 읽고 쓰기가 가능하게 DB 열기
-        SQLiteDatabase db = getWritableDatabase();
         db.execSQL("UPDATE status SET name='"+character.getName()+"' WHERE _id = 1;");
         db.execSQL("UPDATE status SET height="+character.getHeight()+" WHERE _id = 1;");
         db.execSQL("UPDATE status SET weight="+character.getWeight()+" WHERE _id = 1;");
@@ -51,12 +50,11 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("UPDATE status SET last_exercised="+character.getLevel().getLast_exercised()+" WHERE _id = 1;");
         db.execSQL("UPDATE status SET dayStep="+character.getStep()+" WHERE _id = 1;");
         db.execSQL("UPDATE status SET dayDistance="+character.getDistance()+" WHERE _id = 1;");
-        db.close();
     }
 
-    public void update(Setting setting) {
+    public void update(Setting setting, SQLiteDatabase db) {
         // 읽고 쓰기가 가능하게 DB 열기
-        SQLiteDatabase db = getWritableDatabase();
+
         db.execSQL("UPDATE setting SET stepNotice="+((setting.isStepNotice() == true) ? 1 : 0)+" WHERE _id = 1;");
         db.execSQL("UPDATE setting SET distanceNotice="+((setting.isDistanceNotice() == true) ? 1 : 0)+" WHERE _id = 1;");
         db.execSQL("UPDATE setting SET stepGoal="+setting.getStepGoal()+" WHERE _id = 1;");
@@ -65,6 +63,5 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("UPDATE setting SET appUpdateTime="+setting.getAppUpdateTime()+" WHERE _id = 1;");
         db.execSQL("UPDATE setting SET sleepTime="+setting.getSleepTime()+" WHERE _id = 1;");
         db.execSQL("UPDATE setting SET wakeTime="+setting.getWakeTime()+" WHERE _id = 1;");
-        db.close();
     }
 }

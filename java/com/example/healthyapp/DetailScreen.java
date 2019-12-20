@@ -117,7 +117,6 @@ public class DetailScreen extends AppCompatActivity {
                 cursor.getInt(cursor.getColumnIndex("sleepTime")),
                 cursor.getInt(cursor.getColumnIndex("wakeTime")));
         cursor.close();
-        db.close();
 
         nameText.setText("이름 : "+character.getName());
         lvText.setText("Lv : " + character.getLevel().getLevel());
@@ -142,7 +141,6 @@ public class DetailScreen extends AppCompatActivity {
 
     public void updateCharacter()
     {
-        db = helper.getWritableDatabase();
         cursor = db.rawQuery("SELECT * FROM status;", null);
         cursor.moveToFirst();
         character.setName(cursor.getString(cursor.getColumnIndex("name")));
@@ -157,7 +155,6 @@ public class DetailScreen extends AppCompatActivity {
         character.setDistance(cursor.getFloat(cursor.getColumnIndex("dayDistance")));
         character.getLevel().setLast_exercised(cursor.getLong(cursor.getColumnIndex("last_exercised")));
         cursor.close();
-        db.close();
     }
 
     public class updateScreen implements Runnable {
