@@ -110,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(new Intent(MainActivity.this, FirstSetting.class), 0);
         }else {
             Play=true;
+            background = new Intent(this,BackGround.class);
+            startService(background);
             system.start();
         }
     }
@@ -160,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == 1) {//앱 구동 설정
             if (resultCode != RESULT_CANCELED) {
+                stopService(background);
                 db = helper.getWritableDatabase();
                 cursor = db.rawQuery("SELECT * FROM setting;", null);
                 cursor.moveToFirst();
@@ -167,11 +170,15 @@ public class MainActivity extends AppCompatActivity {
                 cursor.close();
                 db.close();
 
+                if(resultCode == 1)//시간 변경
+                {
+                    startService(background);
+                }
+
                 if(resultCode == 2)//캐릭터 삭제
                 {
                     Play=false;
                     system.interrupt();
-                    stopService(background);
                     startActivityForResult(new Intent(MainActivity.this, FirstSetting.class), 0);
                 }
 
@@ -179,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Play=false;
                     system.interrupt();
-                    stopService(background);
                     status.sendMessage(Message.obtain(status, 1, 0, 0));
 
                     Play = true;

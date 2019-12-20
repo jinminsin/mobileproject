@@ -61,7 +61,6 @@ public class BackGround extends Service {
             switch(msg.what) {
                 case 1://캐릭터 수정
                 helper.update(character);
-                helper.update(setting);
                 break;
                 case 2://목표달성 - 걸음
                     intent = new Intent(getApplicationContext(),MainActivity.class);
