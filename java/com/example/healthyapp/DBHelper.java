@@ -1,7 +1,6 @@
 package com.example.healthyapp;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -31,7 +30,6 @@ public class DBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("INSERT INTO setting" +
                 " (stepNotice, distanceNotice, stepGoal, distanceGoal, goalTime, appUpdateTime, sleepTime, wakeTime, setWidget)" +
                 " VALUES (0,0,0,0,0,60,1380,640,0);");//초기레코드 세팅
-
     }
 
     @Override

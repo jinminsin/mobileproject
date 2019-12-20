@@ -1,11 +1,9 @@
 package com.example.healthyapp;
 
-import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
 
 public class sensor implements SensorEventListener {
     private final int AVG_NUM = 5;

@@ -10,11 +10,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.hardware.SensorManager;
-import android.location.LocationManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.util.Log;
 
 public class BackGround extends Service {
     private final long oneDayMilies = 24*60*60*1000;//하루 시간
@@ -63,6 +61,7 @@ public class BackGround extends Service {
             switch(msg.what) {
                 case 1://캐릭터 수정
                 helper.update(character);
+                helper.update(setting);
                 break;
                 case 2://목표달성 - 걸음
                     intent = new Intent(getApplicationContext(),MainActivity.class);
@@ -187,11 +186,11 @@ public class BackGround extends Service {
         super.onDestroy();
     }
 
-
     //경험치 관련(칼로리-> (파생) 거리)
     class currentExp extends Thread {
         private int count = 0;
         private float prekcal = 0;//이전 칼로리
+        private float speed = 0;
 
         public void run() {
             while (play) {
@@ -214,21 +213,23 @@ public class BackGround extends Service {
                달리기 - 14.5km/h 1102 15.0
                달리기 - 16km/h 1176 16.0
                */
-                    if (voting() > 28) character.CalorieAcquisition(1 / 60f, 12);
-                    else if (voting() > 24) character.CalorieAcquisition(1 / 60f, 10);
-                    else if (voting() > 20) character.CalorieAcquisition(1 / 60f, 8);
-                    else if (voting() > 18) character.CalorieAcquisition(1 / 60f, 6);
-                    else if (voting() > 14) character.CalorieAcquisition(1 / 60f, 4);
-                    else if (voting() > 11)
+                speed = voting();
+
+                    if (speed > 28) character.CalorieAcquisition(1 / 60f, 12);
+                    else if (speed > 24) character.CalorieAcquisition(1 / 60f, 10);
+                    else if (speed > 20) character.CalorieAcquisition(1 / 60f, 8);
+                    else if (speed > 18) character.CalorieAcquisition(1 / 60f, 6);
+                    else if (speed > 14) character.CalorieAcquisition(1 / 60f, 4);
+                    else if (speed > 11)
                         character.CalorieAcquisition(1 / 60f, 11);// 평균적으로 100m 달리기 시 10~11초 걸리는 것을 감안
-                    else if (voting() > 8)
+                    else if (speed > 8)
                         character.CalorieAcquisition(1 / 60f, 8); // 오랜 운동을 기준으로 하였음.
-                    else if (voting() > 6) character.CalorieAcquisition(1 / 60f, 5);
-                    else if (voting() > 4) character.CalorieAcquisition(1 / 60f, 3);
-                    else if (voting() > 2) character.CalorieAcquisition(1 / 60f, 2);
+                    else if (speed > 6) character.CalorieAcquisition(1 / 60f, 5);
+                    else if (speed > 4) character.CalorieAcquisition(1 / 60f, 3);
+                    else if (speed > 2) character.CalorieAcquisition(1 / 60f, 2);
                     //초단위
-                    if(voting() > 2 && voting() < 28)
-                    character.setDistance(character.getDistance() + (voting() / 3600));//거리 증가
+                    if(speed > 2 && speed < 28)
+                    character.setDistance(character.getDistance() + (speed / 3600));//거리 증가
 
                     if(character.getDistance() > setting.getDistanceGoal() && noticeDistance)//목표달성
                     {

@@ -1,7 +1,5 @@
 package com.example.healthyapp;
 
-import android.util.Log;
-
 public class Character {
     private String name;//이름
     private float height;//키
