@@ -59,9 +59,6 @@ public class MainActivity extends AppCompatActivity {
         initializeDB();
         askForPermission(Manifest.permission.ACCESS_FINE_LOCATION,0);
 
-        system = new Thread(new updateScreen());
-        system.setDaemon(true);
-
         status = new Handler(new Handler.Callback(){
             @Override
             public boolean handleMessage(Message msg) {
@@ -124,6 +121,8 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(new Intent(MainActivity.this, FirstSetting.class), 0);
         }else {
             Play=true;
+            system = new Thread(new updateScreen());
+            system.setDaemon(true);
             system.start();
         }
     }
@@ -155,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
         status.sendMessage(Message.obtain(status, 2, 0, 0));
         if(!system.isAlive() && character.getCharacter() != 0) {
             Play=true;
+            system = new Thread(new updateScreen());
+            system.setDaemon(true);
             system.start();
         }
     }
