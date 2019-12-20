@@ -110,8 +110,6 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(new Intent(MainActivity.this, FirstSetting.class), 0);
         }else {
             Play=true;
-            background = new Intent(this,BackGround.class);
-            startService(background);
             system.start();
         }
     }
