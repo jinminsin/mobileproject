@@ -53,14 +53,12 @@ public class appWidgetProvider extends AppWidgetProvider {
                     cursor.getFloat(cursor.getColumnIndex("dayDistance")),
                     cursor.getLong(cursor.getColumnIndex("last_exercised")));
             cursor.close();
-            db.close();
         }
 
         @Override
         public void onCreate() {
             play=true;
             initializeDB();
-            appWidgetManager = AppWidgetManager.getInstance(this);
             testWidget = new ComponentName(this, appWidgetProvider.class);
             imageHelper = new ImageHelper();
             views = new RemoteViews(this.getPackageName(), R.layout.appwidget_layout);
@@ -123,6 +121,7 @@ public class appWidgetProvider extends AppWidgetProvider {
                 /*캐릭터 이미지 뷰 설정 끝*/
 
                 //위젯업데이트
+                appWidgetManager = AppWidgetManager.getInstance(this);
                 appWidgetManager.updateAppWidget(testWidget, views);
 
 
@@ -134,16 +133,12 @@ public class appWidgetProvider extends AppWidgetProvider {
 
         public void updateCharacter()
         {
-            db = helper.getWritableDatabase();
             cursor = db.rawQuery("SELECT * FROM status;", null);
             cursor.moveToFirst();
-            character.setName(cursor.getString(cursor.getColumnIndex("name")));
             character.setCharacter(cursor.getInt(cursor.getColumnIndex("character")));
             character.getLevel().setLevel(cursor.getInt(cursor.getColumnIndex("level")));
             character.getLevel().setCurrentExperience(cursor.getFloat(cursor.getColumnIndex("currentExp")));
-            character.setCalories(cursor.getFloat(cursor.getColumnIndex("calorie")));
             cursor.close();
-            db.close();
         }
     }//UpdateService
 
