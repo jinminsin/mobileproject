@@ -168,6 +168,8 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 status.sendMessage(Message.obtain(status, 2, 0, 0));
                 Play = true;
+                system = new Thread(new updateScreen());
+                system.setDaemon(true);
                 system.start();
                 background = new Intent(this,BackGround.class);
                 startService(background);
