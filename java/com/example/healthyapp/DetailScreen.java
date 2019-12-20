@@ -143,10 +143,6 @@ public class DetailScreen extends AppCompatActivity {
     {
         cursor = db.rawQuery("SELECT * FROM status;", null);
         cursor.moveToFirst();
-        character.setName(cursor.getString(cursor.getColumnIndex("name")));
-        character.setHeight(cursor.getFloat(cursor.getColumnIndex("height")));
-        character.setWeight(cursor.getFloat(cursor.getColumnIndex("weight")));
-        character.setCharacter(cursor.getInt(cursor.getColumnIndex("character")));
         character.getLevel().setLevel(cursor.getInt(cursor.getColumnIndex("level")));
         character.getLevel().setCurrentExperience(cursor.getFloat(cursor.getColumnIndex("currentExp")));
         character.getLevel().setNegativeExperience(cursor.getFloat(cursor.getColumnIndex("negativeExp")));
