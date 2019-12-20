@@ -19,6 +19,7 @@ public class BackGround extends Service {
     private boolean play = true;
     private boolean noticeStep = true;
     private boolean noticeDistance = true;
+    private boolean noticeGoal=true;
     private DBHelper helper;
     private SQLiteDatabase db;
 
@@ -87,6 +88,21 @@ public class BackGround extends Service {
                     notice = new Notification.Builder(getApplicationContext())
                             .setContentTitle("목표 달성 완료!")
                             .setContentText("목표 이동 거리를 달성하셨어요")
+                            .setSmallIcon(R.drawable.a2)
+                            .setContentIntent(content)
+                            .setWhen(System.currentTimeMillis())
+                            .build();
+                    noticeManager.notify(2, notice);
+                    break;
+                case 4://달성실패
+                    intent = new Intent(getApplicationContext(),MainActivity.class);
+                    content = PendingIntent.getActivity(getApplicationContext()
+                            , 0
+                            , intent
+                            , 0);
+                    notice = new Notification.Builder(getApplicationContext())
+                            .setContentTitle("목표 달성 실패!")
+                            .setContentText("목표 달성을 못하셨네요~~")
                             .setSmallIcon(R.drawable.a2)
                             .setContentIntent(content)
                             .setWhen(System.currentTimeMillis())
@@ -212,7 +228,7 @@ public class BackGround extends Service {
                달리기 - 14.5km/h 1102 15.0
                달리기 - 16km/h 1176 16.0
                */
-                speed = voting();
+                    speed = voting();
 
                     if (speed > 28) character.CalorieAcquisition(1 / 60f, 12);
                     else if (speed > 24) character.CalorieAcquisition(1 / 60f, 10);
@@ -227,12 +243,13 @@ public class BackGround extends Service {
                     else if (speed > 4) character.CalorieAcquisition(1 / 60f, 3);
                     else if (speed > 2) character.CalorieAcquisition(1 / 60f, 2);
                     //초단위
-                    if(speed > 2 && speed < 28)
-                    character.setDistance(character.getDistance() + (speed / 3600));//거리 증가
+                    if (speed > 2 && speed < 28)
+                        character.setDistance(character.getDistance() + (speed / 3600));//거리 증가
+                    //2km/h /3600 = 1/1800 km/s
 
-                    if(character.getDistance() > setting.getDistanceGoal() && noticeDistance)//목표달성
+                    if (character.getDistance() > setting.getDistanceGoal() && noticeDistance)//목표달성
                     {
-                        noticeDistance=false;
+                        noticeDistance = false;
                         update.sendMessage(Message.obtain(update, 3, 0, 0));
                     }
 
@@ -241,11 +258,19 @@ public class BackGround extends Service {
                     {
                         //칼로리 경험치 합산
                         character.getLevel().expAcquisition((character.getCalories() - prekcal) / 10);
-                        if(character.getLevel().getMaxExperience() < character.getLevel().getCurrentExperience()) character.getLevel().levelUp();
+                        if (character.getLevel().getMaxExperience() < character.getLevel().getCurrentExperience())
+                            character.getLevel().levelUp();
                         prekcal = character.getCalories();
                         count = 0;
                     }
                 }
+
+                if((System.currentTimeMillis() % oneDayMilies)/60000 + 540 > setting.getGoalTime() && noticeGoal)//
+                {
+                    noticeGoal = false;
+                    update.sendMessage(Message.obtain(update, 4, 0, 0));
+                }
+
 
                 if (System.currentTimeMillis() % oneDayMilies < 1000)//일일 기록 초기화
                 {
@@ -253,8 +278,9 @@ public class BackGround extends Service {
                     character.setDistance(0);
                     character.setCalories(0);
                     character.setStep(0);
-                    noticeDistance=true;
-                    noticeStep=true;
+                    noticeDistance = true;
+                    noticeStep = true;
+                    noticeGoal = true;
                 }
 
                 try {
