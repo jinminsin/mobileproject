@@ -152,9 +152,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         status.sendMessage(Message.obtain(status, 2, 0, 0));
+        
         if(character.getCharacter() != 0 && !system.isAlive()) {
             Play=true;
-            status.sendMessage(Message.obtain(status, 2, 0, 0));
             system = new Thread(new updateScreen());
             system.setDaemon(true);
             system.start();
