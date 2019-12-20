@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         status.sendMessage(Message.obtain(status, 2, 0, 0));
-        if(system.isAlive() && character.getCharacter() != 0) {
+        if(!system.isAlive() && character.getCharacter() != 0) {
             Play=true;
             system.start();
         }
